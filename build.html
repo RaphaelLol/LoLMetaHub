@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Recommender - LoL Meta Hub</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="build.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Build Recommender</h1>
+    <p>Sélectionne un champion pour voir un build recommandé :</p>
 
+    <select id="championSelect">
+      <option value="">-- Choisis un champion --</option>
+      <option value="Ahri">Ahri</option>
+      <option value="Yasuo">Yasuo</option>
+      <option value="Lux">Lux</option>
+      <option value="LeeSin">Lee Sin</option>
+      <option value="Jinx">Jinx</option>
+    </select>
+
+    <div id="buildContainer" class="build-box"></div>
+
+    <a href="index.html" style="display:block; text-align:center; margin-top:30px;">Retour à l'accueil</a>
+  </div>
+</body>
+</html>
