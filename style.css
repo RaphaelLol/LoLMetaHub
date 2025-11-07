@@ -1,40 +1,101 @@
+/* Style global */
 body {
     font-family: Arial, sans-serif;
-    background-color: #1e1e2f;
+    background-color: #1e1e2f; /* fond sombre */
     color: #ffffff;
     text-align: center;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
-    color: #f5c518;
+    color: #f5c518; /* jaune */
     margin-top: 50px;
 }
 
-p {
-    font-size: 18px;
-
+/* Menu onglets */
+.menu {
+    margin-top: 20px;
 }
 
-.titreSimulator {
-    color: black;   /* ou la couleur que tu veux */
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-
-/* Liens du menu */
-a.onglet:link,
-a.onglet:visited,
-a.onglet:active {
-    color: #f5c518;      /* Jaune */
+a.onglet {
+    color: #f5c518;
     text-decoration: none;
     font-weight: bold;
-    margin: 10px;
+    margin: 0 10px;
+    padding: 8px 15px;
+    border-radius: 5px;
     display: inline-block;
+    background-color: #2a2a3f;
 }
 
 a.onglet:hover {
-    color: white;        /* Survol */
+    color: white;
 }
 
+a.onglet.actif {
+    background-color: #f5c518;
+    color: black;
+}
 
+/* Contenu accueil */
+.contenuAccueil {
+    margin: 30px auto;
+    width: 90%;
+    font-size: 18px;
+}
+
+/* Simulator page */
+.simulator {
+    margin: 50px auto;
+    padding: 20px;
+    width: 300px;
+    background-color: white;
+    border-radius: 10px;
+    color: black;
+    text-align: left;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.simulator label, .simulator select, .simulator button {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.simulator button {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+/* Résultat simulation */
+#resultat {
+    margin-top: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Titre simulateur */
+.titreSimulator {
+    color: black;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* Bouton retour */
+.boutonRetour {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 8px 15px;
+    background-color: #f5c518;
+    color: black;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.boutonRetour:hover {
+    background-color: #e0b800;
+}
