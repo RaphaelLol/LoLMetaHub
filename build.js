@@ -1,35 +1,46 @@
 const itemURL = "https://ddragon.leagueoflegends.com/cdn/15.22.1/data/en_US/item.json";
+const buildURL = "championsBuilds.json"; // ton petit fichier de builds
+
+let itemsData = {};
+let buildsData = {};
 
 async function loadItems() {
-  const response = await fetch(itemURL);
-  const data = await response.json();
-  return data.data; // contient tous les items
+  const res = await fetch(itemURL);
+  const data = await res.json();
+  itemsData = data.data;
 }
 
-function displayItems(items) {
+async function loadBuilds() {
+  const res = await fetch(buildURL);
+  buildsData = await res.json();
+}
+
+function displayBuild(champion) {
   const container = document.getElementById("buildContainer");
   container.innerHTML = "";
 
-  for (const key in items) {
-    const item = items[key];
+  const build = buildsData[champion];
+  if (!build) {
+    container.innerHTML = `<p>Aucun build trouvé pour "${champion}"</p>`;
+    return;
+  }
 
-    // ignorer les objets consommables, boots, etc. si besoin
-    if (item.gold.total < 900) continue;
-
-    const itemDiv = document.createElement("div");
-    itemDiv.classList.add("item");
-
-    itemDiv.innerHTML = `
-      <img src="https://ddragon.leagueoflegends.com/cdn/15.22.1/img/item/${key}.png" alt="${item.name}">
+  build.forEach(id => {
+    const item = itemsData[id];
+    const div = document.createElement("div");
+    div.classList.add("item");
+    div.innerHTML = `
+      <img src="https://ddragon.leagueoflegends.com/cdn/15.22.1/img/item/${id}.png" alt="${item.name}">
       <p>${item.name}</p>
       <small>${item.gold.total} gold</small>
     `;
-
-    container.appendChild(itemDiv);
-  }
+    container.appendChild(div);
+  });
 }
 
 document.getElementById("loadBuild").addEventListener("click", async () => {
-  const items = await loadItems();
-  displayItems(items);
+  const champ = document.getElementById("championSearch").value.trim();
+  await loadItems();
+  await loadBuilds();
+  displayBuild(champ);
 });
