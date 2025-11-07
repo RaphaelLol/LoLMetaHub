@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Build Recommender - LoL Meta Hub</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="build.js"></script>
+  <title>Build Recommandé - LoLMetaHub</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Build Recommender</h1>
-    <p>Sélectionne un champion pour voir un build recommandé :</p>
+  <header>
+    <h1>LoLMetaHub - Build Recommandé</h1>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="simulator.html">Simulateur</a>
+      <a href="build.html" class="active">Builds</a>
+    </nav>
+  </header>
 
-    <select id="championSelect">
-      <option value="">-- Choisis un champion --</option>
-      <option value="Ahri">Ahri</option>
-      <option value="Yasuo">Yasuo</option>
-      <option value="Lux">Lux</option>
-      <option value="LeeSin">Lee Sin</option>
-      <option value="Jinx">Jinx</option>
-    </select>
+  <main>
+    <section class="build-section">
+      <h2>Choisis ton champion</h2>
+      <input type="text" id="championSearch" placeholder="Tape le nom d’un champion...">
+      <button id="loadBuild">Voir le build</button>
 
-    <div id="buildContainer" class="build-box"></div>
+      <div id="buildContainer" class="build-container"></div>
+    </section>
+  </main>
 
-    <a href="index.html" style="display:block; text-align:center; margin-top:30px;">Retour à l'accueil</a>
-  </div>
+  <script src="js/build.js"></script>
 </body>
 </html>
