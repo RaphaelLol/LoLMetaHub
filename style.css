@@ -99,3 +99,29 @@ a.onglet.actif {
 .boutonRetour:hover {
     background-color: #e0b800;
 }
+
+
+
+
+
+.build-box {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 20px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  transition: 0.3s;
+}
+
+.build-box:hover {
+  transform: scale(1.01);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+select {
+  background: #0e0e0e;
+  color: white;
+  padding: 10px;
+  border: 1px solid #444;
+  border-radius: 8px;
+}
