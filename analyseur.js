@@ -4,10 +4,10 @@ async function chargerJSON(url) {
 }
 
 async function init() {
-  const match = await chargerJSON('data/mockMatch.json');
-  const champions = await chargerJSON('data/champions.json');
-  const items = await chargerJSON('data/item.json').then(data => data.data);
-  const runes = await chargerJSON('data/runesReforged.json');
+  const match = await chargerJSON('mockMatch.json');
+  const champions = await chargerJSON('champions.json');
+  const items = await chargerJSON('item.json').then(data => data.data);
+  const runes = await chargerJSON('runesReforged.json');
 
   const container = document.getElementById('matchContainer');
 
