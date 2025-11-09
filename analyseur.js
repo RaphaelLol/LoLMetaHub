@@ -1,51 +1,70 @@
+// Fonction pour charger un JSON local
 async function chargerJSON(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Erreur de chargement : " + url);
   return await res.json();
 }
 
-async function afficherMatch(match, champions, items, runes) {
-  const container = document.getElementById('matchContainer');
-  container.innerHTML = ""; // On vide le contenu
+// Fonction pour traduire les IDs d'objets en noms
+function getItemNames(itemIds, items) {
+  return itemIds
+    .filter(id => id !== 0) // ignore les slots vides
+    .map(id => items[id]?.name || id)
+    .join(', ');
+}
 
-  if (!match.players || match.players.length === 0) {
-    container.innerHTML = "<p>Aucun joueur trouvé dans ce match.</p>";
-    return;
-  }
-
-  match.players.forEach(player => {
-    const champData = champions.data[player.champion];
-    const playerDiv = document.createElement('div');
-    playerDiv.classList.add('playerCard');
-
-    const itemList = player.items.map(id => items[id]?.name || id).join(', ');
-
-    const runeList = player.runes.map(id => {
+// Fonction pour traduire les runes en noms
+function getRuneNames(runeIds, runes) {
+  return runeIds
+    .map(id => {
       let runeFound = null;
       runes.forEach(tree => {
         tree.slots.forEach(slot => {
-          slot.runes.forEach(r => { if (r.id == id) runeFound = r.name; });
+          slot.runes.forEach(r => {
+            if (r.id == id) runeFound = r.name;
+          });
         });
       });
       return runeFound || id;
-    }).join(', ');
+    })
+    .join(', ');
+}
 
-    const actionsList = player.actions.map(a => {
-      if (a.type === "skill") return `${a.time}s - ${a.type} Skill ${a.skillId} -> ${a.target}`;
-      return `${a.time}s - ${a.type}`;
-    }).join('<br>');
+// Fonction pour afficher un match
+async function afficherMatch(matchData, champions, items, runes) {
+  const container = document.getElementById('matchContainer');
+  container.innerHTML = ''; // vide le container
 
-    playerDiv.innerHTML = `
-      <h2>${player.name} - ${champData?.name || player.champion}</h2>
-      <p><strong>Items :</strong> ${itemList}</p>
-      <p><strong>Runes :</strong> ${runeList}</p>
-      <p><strong>Actions :</strong><br>${actionsList}</p>
+  matchData.info.participants.forEach(player => {
+    const div = document.createElement('div');
+    div.classList.add('playerCard');
+
+    const itemList = getItemNames([
+      player.item0,
+      player.item1,
+      player.item2,
+      player.item3,
+      player.item4,
+      player.item5,
+      player.item6
+    ], items);
+
+    const runeList = player.perks.styles[0].selections.map(r => r.perk).join(', ');
+
+    div.innerHTML = `
+      <h2>${player.summonerName} - ${player.championName}</h2>
+      <p><strong>KDA :</strong> ${player.kills}/${player.deaths}/${player.assists}</p>
+      <p><strong>CS :</strong> ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
+      <p><strong>Gold :</strong> ${player.goldEarned}</p>
+      <p><strong>Objets :</strong> ${itemList}</p>
+      <p><strong>Runes principales :</strong> ${runeList}</p>
     `;
 
-    container.appendChild(playerDiv);
+    container.appendChild(div);
   });
 }
 
+// Initialisation de l'analyseur
 async function init() {
   console.log("Initialisation de l'analyseur... ✅");
 
@@ -54,23 +73,17 @@ async function init() {
   const runes = await chargerJSON('runesReforged.json');
 
   const container = document.getElementById('matchContainer');
+  container.innerHTML = "<p>Aucun match chargé pour le moment.</p>";
+
   const importBtn = document.getElementById('importBtn');
   const importInput = document.getElementById('importInput');
 
-  container.innerHTML = "<p>Aucun match chargé pour le moment.</p>";
-
-  // ✅ Vérifie que les éléments existent bien avant d’ajouter les events
   if (importBtn && importInput) {
-    importBtn.addEventListener('click', () => {
-      console.log("Bouton Importer cliqué !");
-      importInput.click();
-    });
+    importBtn.addEventListener('click', () => importInput.click());
 
     importInput.addEventListener('change', event => {
       const file = event.target.files[0];
       if (!file) return;
-
-      console.log("Fichier importé :", file.name);
 
       const reader = new FileReader();
       reader.onload = async e => {
@@ -89,4 +102,6 @@ async function init() {
   }
 }
 
+// Lancement
 init();
+
