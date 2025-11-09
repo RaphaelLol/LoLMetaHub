@@ -1,21 +1,22 @@
-/* Style global */
+/* ==== Style global ==== */
 body {
     font-family: Arial, sans-serif;
-    background-color: #1e1e2f; /* fond sombre */
+    background-color: #1e1e2f;
     color: #ffffff;
-    text-align: center;
     margin: 0;
-    padding: 0;
+    padding: 0 20px;
 }
 
 h1 {
-    color: #f5c518; /* jaune */
+    color: #f5c518;
+    text-align: center;
     margin-top: 50px;
 }
 
-/* Menu onglets */
+/* ==== Menu onglets ==== */
 .menu {
     margin-top: 20px;
+    text-align: center;
 }
 
 a.onglet {
@@ -27,6 +28,7 @@ a.onglet {
     border-radius: 5px;
     display: inline-block;
     background-color: #2a2a3f;
+    transition: 0.2s;
 }
 
 a.onglet:hover {
@@ -38,127 +40,125 @@ a.onglet.actif {
     color: black;
 }
 
-/* Contenu accueil */
-.contenuAccueil {
-    margin: 30px auto;
-    width: 90%;
-    font-size: 18px;
+/* ==== Match Header ==== */
+.matchHeader {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1.2em;
+    color: #f5c518;
 }
 
-/* Simulator page */
-.simulator {
-    margin: 50px auto;
-    padding: 20px;
-    width: 300px;
-    background-color: white;
-    border-radius: 10px;
-    color: black;
-    text-align: left;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+/* ==== Équipes ==== */
+.teamContainer {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 15px;
+    border: 2px solid #444;
 }
 
-.simulator label, .simulator select, .simulator button {
-    display: block;
-    width: 100%;
+.teamContainer.teamBlue { background-color: #1f2a3d; border-color: #2a3b55; }
+.teamContainer.teamRed { background-color: #3d1f1f; border-color: #552a2a; }
+
+.teamContainer h3 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 1.3em;
+    color: #f5c518;
+}
+
+/* ==== Joueurs ==== */
+.playerCard {
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 12px;
+    background-color: #2a2a3d;
+    border: 1px solid #555;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.playerCard:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(0,0,0,0.7);
+}
+
+.playerCard h4 {
+    margin: 0 0 10px 0;
+    color: #f5c518;
+}
+
+/* ==== Stats graphiques ==== */
+.statsGraph {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
     margin-top: 10px;
 }
 
-.simulator button {
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    cursor: pointer;
-}
-
-/* Résultat simulation */
-#resultat {
-    margin-top: 20px;
-    font-weight: bold;
+.playerBar {
+    width: 130px;
+    padding: 10px;
+    background-color: #333;
+    border-radius: 6px;
     text-align: center;
+    font-size: 0.9em;
+    color: white;
 }
 
-/* Titre simulateur */
-.titreSimulator {
-    color: black;
-    text-align: center;
-    margin-top: 50px;
+/* ==== Analyse coach ==== */
+.coachStats {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #222;
+    border-radius: 10px;
+    color: #f5c518;
 }
 
-/* Bouton retour */
-.boutonRetour {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 8px 15px;
-    background-color: #f5c518;
-    color: black;
-    text-decoration: none;
-    border-radius: 5px;
-    font-weight: bold;
+.coachStats h4 {
+    margin-top: 0;
 }
 
-.boutonRetour:hover {
-    background-color: #e0b800;
-}
-
-
-
-
-
-.build-box {
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 20px;
-  border-radius: 15px;
-  margin-top: 20px;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-  transition: 0.3s;
-}
-
-.build-box:hover {
-  transform: scale(1.01);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-}
-
-select {
-  background: #0e0e0e;
-  color: white;
-  padding: 10px;
-  border: 1px solid #444;
-  border-radius: 8px;
-}
-
+/* ==== Items ==== */
 .build-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 120px);
-  gap: 10px;
-  margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 10px;
 }
 
 .item {
-  background: #1e1e1e;
-  border-radius: 10px;
-  padding: 10px;
-  text-align: center;
-  color: white;
-  transition: transform 0.2s;
-}
-
-.item:hover {
-  transform: scale(1.1);
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    padding: 5px;
+    text-align: center;
+    color: white;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .item img {
-  width: 64px;
-  height: 64px;
-  border-radius: 6px;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 4px;
 }
 
+/* ==== Runebox ==== */
+.runesList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+    margin-top: 5px;
+}
 
-
-
-
-.teamContainer { margin: 20px 0; border: 2px solid #444; padding: 10px; border-radius: 10px; background: #1f1f2f; }
-.playerCard { margin: 10px; padding: 10px; border: 1px solid #555; border-radius: 10px; background: #2a2a3d; }
-.matchHeader { text-align: center; margin-bottom: 20px; color: #f5c518; }
-.statsGraph { display: flex; justify-content: space-around; margin-top: 10px; }
-.playerBar { width: 150px; padding: 5px; background: #333; color: white; border-radius: 5px; text-align: center; }
-.coachStats { margin-top: 10px; padding: 5px; background: #222; border-radius: 5px; }
+.rune {
+    background-color: #444;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 0.8em;
+}
