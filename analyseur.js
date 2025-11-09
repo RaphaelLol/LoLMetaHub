@@ -50,54 +50,67 @@ function analyseEquipe(players) {
   return stats;
 }
 
-async function afficherMatch(match, champions, items, runes) {
+async function afficherMatch(matchData, champions, items, runes) {
   const container = document.getElementById('matchContainer');
-  container.innerHTML = '';
+  container.innerHTML = ''; // nettoie l'affichage
 
-  // En-tête du match
+  // Durée du match et mode
+  const durationMin = Math.floor(matchData.info.gameDuration / 60);
+  const durationSec = matchData.info.gameDuration % 60;
   const header = document.createElement('div');
   header.classList.add('matchHeader');
-  header.innerHTML = `
-    <h2>Mode : ${match.gameMode} | Durée : ${Math.floor(match.gameDuration/60)}m ${match.gameDuration % 60}s</h2>
-    <h3>Score : Blue ${match.teams[0].kills} - Red ${match.teams[1].kills}</h3>
-  `;
+  header.innerHTML = `<h2>Mode : ${matchData.info.gameMode} | Durée : ${durationMin}m ${durationSec}s</h2>`;
   container.appendChild(header);
 
   // Séparer les équipes
-  const blueTeam = match.players.filter(p => p.teamId === 100);
-  const redTeam = match.players.filter(p => p.teamId === 200);
+  const team100 = matchData.info.participants.filter(p => p.teamId === 100);
+  const team200 = matchData.info.participants.filter(p => p.teamId === 200);
 
-  [ {team: "Blue Team", players: blueTeam}, {team: "Red Team", players: redTeam} ].forEach(group => {
+  [team100, team200].forEach((team, idx) => {
     const teamDiv = document.createElement('div');
     teamDiv.classList.add('teamContainer');
-    teamDiv.innerHTML = `<h2>${group.team}</h2>`;
+    teamDiv.innerHTML = `<h3>Équipe ${idx === 0 ? "Bleue" : "Rouge"}</h3>`;
     
-    group.players.forEach(player => {
-      const champData = champions.data[player.championName];
+    team.forEach(player => {
       const playerDiv = document.createElement('div');
       playerDiv.classList.add('playerCard');
 
-      const itemList = player.items.map(id => items[id]?.name || id).join(', ');
-      const runeList = getRuneNames(player.runes, runes).join(', ');
+      // Items
+      const itemList = [];
+      for (let i = 0; i <= 6; i++) {
+        const itemId = player[`item${i}`];
+        if (itemId && items[itemId]) itemList.push(items[itemId].name);
+      }
 
-      // Actions simplifiées pour l'instant
-      const actionsList = player.actions?.map(a => {
-        if(a.type === "skill") return `${a.time}s - Skill ${a.skillId} -> ${a.target}`;
-        return `${a.time}s - ${a.type}`;
-      })?.join('<br>') || "Aucune action enregistrée";
+      // Runes
+      const runeList = [];
+      player.perks.styles.forEach(style => {
+        style.selections.forEach(s => {
+          runeList.push(runes.find(r => r.id === s.perk)?.name || s.perk);
+        });
+      });
+
+      // Actions (facultatif, peut être basé sur events si tu en veux)
+      let actionsList = player.timeline ? player.timeline.events?.map(a => {
+        if(a.type === "CHAMPION_KILL") return `${a.timestamp / 1000}s - Kill ${a.killerId} -> ${a.victimId}`;
+        return `${a.timestamp / 1000}s - ${a.type}`;
+      }).join('<br>') : "Pas d'actions disponibles";
 
       playerDiv.innerHTML = `
-        <h3>${player.summonerName} - ${champData?.name || player.championName}</h3>
+        <h4>${player.summonerName} - ${champions.data[player.championId]?.name || player.championId}</h4>
         <p><strong>KDA :</strong> ${player.kills}/${player.deaths}/${player.assists}</p>
-        <p><strong>CS :</strong> ${player.cs}</p>
-        <p><strong>Gold :</strong> ${player.gold}</p>
-        <p><strong>Items :</strong> ${itemList}</p>
-        <p><strong>Runes :</strong> ${runeList}</p>
+        <p><strong>CS :</strong> ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
+        <p><strong>Gold :</strong> ${player.goldEarned}</p>
+        <p><strong>Objets :</strong> ${itemList.join(', ')}</p>
+        <p><strong>Runes :</strong> ${runeList.join(', ')}</p>
         <p><strong>Actions :</strong><br>${actionsList}</p>
       `;
 
       teamDiv.appendChild(playerDiv);
     });
+
+    container.appendChild(teamDiv);
+  });
 
     // Graphiques pour la team
     createStatsGraph(group.players, teamDiv);
