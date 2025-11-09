@@ -1,0 +1,22 @@
+{
+  "matchId": "123456",
+  "players": [
+    {
+      "name": "Hide on bush",
+      "champion": "Yasuo",
+      "items": ["3046", "3153"],
+      "runes": ["8000", "8100"],
+      "actions": [
+        {"time": 100, "type": "move", "x": 100, "y": 200},
+        {"time": 120, "type": "skill", "skillId": 1, "target": "Lux"}
+      ]
+    },
+    {
+      "name": "LuxPlayer",
+      "champion": "Lux",
+      "items": ["3092", "3165"],
+      "runes": ["8200", "8210"],
+      "actions": []
+    }
+  ]
+}
