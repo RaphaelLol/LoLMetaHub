@@ -3,6 +3,23 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
+console.log("Analyseur.js chargé ✅");
+
+async function chargerJSON(url) {
+  console.log("Chargement de :", url);
+  const res = await fetch(url);
+  console.log("Statut :", res.status);
+  if(!res.ok) console.error("Erreur en chargeant", url);
+  return await res.json();
+}
+
+async function init() {
+  console.log("Initialisation de l'analyseur...");
+  const match = await chargerJSON('mockMatch.json');
+  console.log("Match :", match);
+}
+
+
 async function init() {
   const match = await chargerJSON('mockMatch.json');
   const champions = await chargerJSON('champions.json');
