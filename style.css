@@ -120,31 +120,26 @@ a.onglet.actif {
 }
 
 /* ==== Items ==== */
-.build-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 10px;
+.build-container { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
+  gap: 10px; 
+  margin-bottom: 10px; 
 }
 
-.item {
-    background-color: #1e1e1e;
-    border-radius: 8px;
-    padding: 5px;
-    text-align: center;
-    color: white;
-    width: 64px;
-    height: 64px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.item { 
+  background: #2a2a3d; 
+  border-radius: 8px; 
+  padding: 5px; 
+  text-align: center; 
+  color: white; 
 }
 
-.item img {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 4px;
+.item img { 
+  width: 48px; 
+  height: 48px; 
+  border-radius: 4px; 
+  margin-bottom: 5px;
 }
 
 /* ==== Runebox ==== */
@@ -162,3 +157,18 @@ a.onglet.actif {
     border-radius: 4px;
     font-size: 0.8em;
 }
+
+.runes-container { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 5px; 
+  margin-bottom: 10px; 
+}
+
+.rune-box { 
+  background-color: #444; 
+  padding: 3px 5px; 
+  border-radius: 5px; 
+  font-size: 12px; 
+}
+
