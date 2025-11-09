@@ -46,11 +46,11 @@ function analyseEquipe(players, duration) {
   }));
 }
 
-// Affichage du match
 async function afficherMatch(matchData, champions, items, runes) {
   const container = document.getElementById('matchContainer');
-  container.innerHTML = '';
+  container.innerHTML = ''; // Nettoie l'affichage
 
+  // Header match : mode et durée
   const durationMin = Math.floor(matchData.info.gameDuration / 60);
   const durationSec = matchData.info.gameDuration % 60;
   const header = document.createElement('div');
@@ -58,60 +58,98 @@ async function afficherMatch(matchData, champions, items, runes) {
   header.innerHTML = `<h2>Mode : ${matchData.info.gameMode} | Durée : ${durationMin}m ${durationSec}s</h2>`;
   container.appendChild(header);
 
-  const teams = [
-    { name: "Équipe Bleue", players: matchData.info.participants.filter(p => p.teamId === 100) },
-    { name: "Équipe Rouge", players: matchData.info.participants.filter(p => p.teamId === 200) }
-  ];
+  // Séparer les équipes
+  const team100 = matchData.info.participants.filter(p => p.teamId === 100);
+  const team200 = matchData.info.participants.filter(p => p.teamId === 200);
 
-  teams.forEach(team => {
+  [team100, team200].forEach((team, idx) => {
     const teamDiv = document.createElement('div');
     teamDiv.classList.add('teamContainer');
-    teamDiv.innerHTML = `<h3>${team.name}</h3>`;
+    teamDiv.innerHTML = `<h3>Équipe ${idx === 0 ? 'Bleue' : 'Rouge'}</h3>`;
 
-    team.players.forEach(player => {
+    team.forEach(player => {
       const playerDiv = document.createElement('div');
       playerDiv.classList.add('playerCard');
 
-      // Items
-      const itemList = [];
+      // Champion
+      const champName = champions.data[player.championId]?.name || player.championId;
+
+      // Items en colonnes avec logo
+      const itemContainer = document.createElement('div');
+      itemContainer.classList.add('build-container');
       for (let i = 0; i <= 6; i++) {
         const itemId = player[`item${i}`];
-        if (itemId && items[itemId]) itemList.push(items[itemId].name);
+        if (itemId && items[itemId]) {
+          const itemDiv = document.createElement('div');
+          itemDiv.classList.add('item');
+          itemDiv.innerHTML = `<img src="https://ddragon.leagueoflegends.com/cdn/13.23.1/img/item/${itemId}.png" alt="${items[itemId].name}"><br>${items[itemId].name}`;
+          itemContainer.appendChild(itemDiv);
+        }
       }
 
-      // Runes
-      const runeList = getRuneNames(player, runes);
+      // Runes en petites boîtes
+      const runeContainer = document.createElement('div');
+      runeContainer.classList.add('runes-container');
+      player.perks.styles.forEach(style => {
+        style.selections.forEach(s => {
+          const runeName = runes.find(r => r.id === s.perk)?.name || s.perk;
+          const runeDiv = document.createElement('div');
+          runeDiv.classList.add('rune-box');
+          runeDiv.textContent = runeName;
+          runeContainer.appendChild(runeDiv);
+        });
+      });
 
-      // Actions
-      const actionsList = player.timeline?.events?.map(a => {
-        if(a.type === "CHAMPION_KILL") return `${Math.floor(a.timestamp/1000)}s - Kill ${a.killerId} -> ${a.victimId}`;
-        return `${Math.floor(a.timestamp/1000)}s - ${a.type}`;
-      })?.join('<br>') || "Pas d'actions disponibles";
+      // Actions (facultatif)
+      let actionsList = player.timeline?.events?.map(a => {
+        if(a.type === "CHAMPION_KILL") return `${(a.timestamp/1000).toFixed(1)}s - Kill ${a.killerId} -> ${a.victimId}`;
+        return `${(a.timestamp/1000).toFixed(1)}s - ${a.type}`;
+      }).join('<br>') || "Pas d'actions disponibles";
 
+      // Création du HTML de la carte joueur
       playerDiv.innerHTML = `
-        <h4>${player.summonerName} - ${champions.data[player.championId]?.name || player.championId}</h4>
+        <h4>${player.summonerName} - ${champName}</h4>
         <p><strong>KDA :</strong> ${player.kills}/${player.deaths}/${player.assists}</p>
         <p><strong>CS :</strong> ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
         <p><strong>Gold :</strong> ${player.goldEarned}</p>
-        <p><strong>Objets :</strong> ${itemList.join(', ')}</p>
-        <p><strong>Runes :</strong> ${runeList.join(', ')}</p>
-        <p><strong>Actions :</strong><br>${actionsList}</p>
+        <p><strong>Objets :</strong></p>
       `;
+      playerDiv.appendChild(itemContainer);
+      playerDiv.innerHTML += `<p><strong>Runes :</strong></p>`;
+      playerDiv.appendChild(runeContainer);
+      playerDiv.innerHTML += `<p><strong>Actions :</strong><br>${actionsList}</p>`;
 
       teamDiv.appendChild(playerDiv);
     });
 
-    // Graphiques et analyse pour coach
-    createStatsGraph(team.players, teamDiv);
-    const coachStats = analyseEquipe(team.players, matchData.info.gameDuration);
+    // Graphiques statistiques
+    createStatsGraph(team, teamDiv);
+
+    // Analyse coach
+    const coachStats = analyseEquipe(team);
     const coachDiv = document.createElement('div');
     coachDiv.classList.add('coachStats');
     coachDiv.innerHTML = `<h4>Analyse pour coach :</h4>`;
-    coachStats.forEach(s => {
-      const p = document.createElement('p');
-      p.innerText = `${s.name} → KDA ratio: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
-      coachDiv.appendChild(p);
-    });
+    const table = document.createElement('table');
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Joueur</th>
+          <th>KDA ratio</th>
+          <th>CS/min</th>
+          <th>Gold/min</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${coachStats.map(s => `<tr>
+          <td>${s.name}</td>
+          <td>${s.kdaRatio.toFixed(2)}</td>
+          <td>${s.csPerMin.toFixed(1)}</td>
+          <td>${s.goldPerMin.toFixed(1)}</td>
+        </tr>`).join('')}
+      </tbody>
+    `;
+    coachDiv.appendChild(table);
     teamDiv.appendChild(coachDiv);
 
     container.appendChild(teamDiv);
