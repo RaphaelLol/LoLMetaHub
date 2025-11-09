@@ -16,6 +16,12 @@ async function init() {
     const playerDiv = document.createElement('div');
     playerDiv.classList.add('playerCard');
 
+    async function chargerJSON(url) {
+  const res = await fetch(url);
+  if(!res.ok) console.error("Erreur en chargeant", url, res.status);
+  return await res.json();
+}
+
     // Items
     const itemList = player.items.map(id => items[id]?.name || id).join(', ');
 
