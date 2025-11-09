@@ -4,22 +4,19 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
-// Convertit les runes IDs en noms grâce au fichier runesReforged.json
-function getRuneNames(runeIds, runesData) {
-  return runeIds.map(id => {
-    let name = null;
-    runesData.forEach(tree => {
-      tree.slots.forEach(slot => {
-        slot.runes.forEach(r => {
-          if (r.id == id) name = r.name;
-        });
-      });
+// Convertit les runes IDs en noms
+function getRuneNames(player, runesData) {
+  const runeList = [];
+  player.perks.styles.forEach(style => {
+    style.selections.forEach(s => {
+      const rune = runesData.find(r => r.id === s.perk);
+      runeList.push(rune?.name || s.perk);
     });
-    return name || id;
   });
+  return runeList;
 }
 
-// Création d'un graphique simple (barres) pour KDA, CS, Gold
+// Graphiques simples par joueur
 function createStatsGraph(players, container) {
   const graphDiv = document.createElement('div');
   graphDiv.classList.add('statsGraph');
@@ -28,10 +25,10 @@ function createStatsGraph(players, container) {
     const bar = document.createElement('div');
     bar.classList.add('playerBar');
     bar.innerHTML = `
-      <strong>${player.name}</strong><br>
+      <strong>${player.summonerName}</strong><br>
       KDA: ${player.kills}/${player.deaths}/${player.assists}<br>
-      CS: ${player.cs}<br>
-      Gold: ${player.gold}
+      CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}<br>
+      Gold: ${player.goldEarned}
     `;
     graphDiv.appendChild(bar);
   });
@@ -39,22 +36,21 @@ function createStatsGraph(players, container) {
   container.appendChild(graphDiv);
 }
 
-// Calcul simple des stats pour le coach
-function analyseEquipe(players) {
-  const stats = players.map(p => ({
-    name: p.name,
+// Analyse pour coach
+function analyseEquipe(players, duration) {
+  return players.map(p => ({
+    name: p.summonerName,
     kdaRatio: p.deaths === 0 ? p.kills + p.assists : (p.kills + p.assists)/p.deaths,
-    csPerMin: p.cs / (p.duration/60),
-    goldPerMin: p.gold / (p.duration/60)
+    csPerMin: (p.totalMinionsKilled + p.neutralMinionsKilled)/(duration/60),
+    goldPerMin: p.goldEarned/(duration/60)
   }));
-  return stats;
 }
 
+// Affichage du match
 async function afficherMatch(matchData, champions, items, runes) {
   const container = document.getElementById('matchContainer');
-  container.innerHTML = ''; // nettoie l'affichage
+  container.innerHTML = '';
 
-  // Durée du match et mode
   const durationMin = Math.floor(matchData.info.gameDuration / 60);
   const durationSec = matchData.info.gameDuration % 60;
   const header = document.createElement('div');
@@ -62,16 +58,17 @@ async function afficherMatch(matchData, champions, items, runes) {
   header.innerHTML = `<h2>Mode : ${matchData.info.gameMode} | Durée : ${durationMin}m ${durationSec}s</h2>`;
   container.appendChild(header);
 
-  // Séparer les équipes
-  const team100 = matchData.info.participants.filter(p => p.teamId === 100);
-  const team200 = matchData.info.participants.filter(p => p.teamId === 200);
+  const teams = [
+    { name: "Équipe Bleue", players: matchData.info.participants.filter(p => p.teamId === 100) },
+    { name: "Équipe Rouge", players: matchData.info.participants.filter(p => p.teamId === 200) }
+  ];
 
-  [team100, team200].forEach((team, idx) => {
+  teams.forEach(team => {
     const teamDiv = document.createElement('div');
     teamDiv.classList.add('teamContainer');
-    teamDiv.innerHTML = `<h3>Équipe ${idx === 0 ? "Bleue" : "Rouge"}</h3>`;
-    
-    team.forEach(player => {
+    teamDiv.innerHTML = `<h3>${team.name}</h3>`;
+
+    team.players.forEach(player => {
       const playerDiv = document.createElement('div');
       playerDiv.classList.add('playerCard');
 
@@ -83,18 +80,13 @@ async function afficherMatch(matchData, champions, items, runes) {
       }
 
       // Runes
-      const runeList = [];
-      player.perks.styles.forEach(style => {
-        style.selections.forEach(s => {
-          runeList.push(runes.find(r => r.id === s.perk)?.name || s.perk);
-        });
-      });
+      const runeList = getRuneNames(player, runes);
 
-      // Actions (facultatif, peut être basé sur events si tu en veux)
-      let actionsList = player.timeline ? player.timeline.events?.map(a => {
-        if(a.type === "CHAMPION_KILL") return `${a.timestamp / 1000}s - Kill ${a.killerId} -> ${a.victimId}`;
-        return `${a.timestamp / 1000}s - ${a.type}`;
-      }).join('<br>') : "Pas d'actions disponibles";
+      // Actions
+      const actionsList = player.timeline?.events?.map(a => {
+        if(a.type === "CHAMPION_KILL") return `${Math.floor(a.timestamp/1000)}s - Kill ${a.killerId} -> ${a.victimId}`;
+        return `${Math.floor(a.timestamp/1000)}s - ${a.type}`;
+      })?.join('<br>') || "Pas d'actions disponibles";
 
       playerDiv.innerHTML = `
         <h4>${player.summonerName} - ${champions.data[player.championId]?.name || player.championId}</h4>
@@ -109,14 +101,9 @@ async function afficherMatch(matchData, champions, items, runes) {
       teamDiv.appendChild(playerDiv);
     });
 
-    container.appendChild(teamDiv);
-  });
-
-    // Graphiques pour la team
-    createStatsGraph(group.players, teamDiv);
-
-    // Analyse pour coach
-    const coachStats = analyseEquipe(group.players);
+    // Graphiques et analyse pour coach
+    createStatsGraph(team.players, teamDiv);
+    const coachStats = analyseEquipe(team.players, matchData.info.gameDuration);
     const coachDiv = document.createElement('div');
     coachDiv.classList.add('coachStats');
     coachDiv.innerHTML = `<h4>Analyse pour coach :</h4>`;
@@ -125,8 +112,8 @@ async function afficherMatch(matchData, champions, items, runes) {
       p.innerText = `${s.name} → KDA ratio: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
       coachDiv.appendChild(p);
     });
-
     teamDiv.appendChild(coachDiv);
+
     container.appendChild(teamDiv);
   });
 }
@@ -166,8 +153,6 @@ async function init() {
   }
 }
 
-init();
-
-// Lancement
+// Lancement unique
 init();
 
