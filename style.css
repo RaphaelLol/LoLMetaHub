@@ -156,14 +156,9 @@ select {
 
 
 
-.playerCard {
-  background-color: #2b2b3a;
-  margin: 15px auto;
-  padding: 15px;
-  border-radius: 10px;
-  color: white;
-  width: 80%;
-  text-align: left;
-}
-
-
+.teamContainer { margin: 20px 0; border: 2px solid #444; padding: 10px; border-radius: 10px; background: #1f1f2f; }
+.playerCard { margin: 10px; padding: 10px; border: 1px solid #555; border-radius: 10px; background: #2a2a3d; }
+.matchHeader { text-align: center; margin-bottom: 20px; color: #f5c518; }
+.statsGraph { display: flex; justify-content: space-around; margin-top: 10px; }
+.playerBar { width: 150px; padding: 5px; background: #333; color: white; border-radius: 5px; text-align: center; }
+.coachStats { margin-top: 10px; padding: 5px; background: #222; border-radius: 5px; }
