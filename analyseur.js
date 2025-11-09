@@ -1,31 +1,27 @@
 async function chargerJSON(url) {
-  const res = await fetch(url);
-  return await res.json();
-}
-
-console.log("Analyseur.js chargé ✅");
-
-async function chargerJSON(url) {
   console.log("Chargement de :", url);
   const res = await fetch(url);
-  console.log("Statut :", res.status);
-  if(!res.ok) console.error("Erreur en chargeant", url);
+  if (!res.ok) {
+    console.error("Erreur en chargeant", url, res.status);
+    return null;
+  }
   return await res.json();
 }
 
 async function init() {
   console.log("Initialisation de l'analyseur...");
-  const match = await chargerJSON('mockMatch.json');
-  console.log("Match :", match);
-}
 
-
-async function init() {
   const match = await chargerJSON('mockMatch.json');
   const champions = await chargerJSON('champions.json');
-  const items = await chargerJSON('item.json').then(data => data.data);
+  const itemsRaw = await chargerJSON('item.json');
   const runes = await chargerJSON('runesReforged.json');
 
+  if (!match || !champions || !itemsRaw || !runes) {
+    console.error("❌ Un des fichiers JSON n’a pas pu être chargé !");
+    return;
+  }
+
+  const items = itemsRaw.data;
   const container = document.getElementById('matchContainer');
 
   match.players.forEach(player => {
@@ -33,29 +29,23 @@ async function init() {
     const playerDiv = document.createElement('div');
     playerDiv.classList.add('playerCard');
 
-    async function chargerJSON(url) {
-  const res = await fetch(url);
-  if(!res.ok) console.error("Erreur en chargeant", url, res.status);
-  return await res.json();
-}
-
-    // Items
+    // --- Items ---
     const itemList = player.items.map(id => items[id]?.name || id).join(', ');
 
-    // Runes
+    // --- Runes ---
     const runeList = player.runes.map(id => {
-      let runeFound = null;
-      runes.forEach(tree => {
-        tree.slots.forEach(slot => {
-          slot.runes.forEach(r => { if(r.id == id) runeFound = r.name; });
-        });
-      });
-      return runeFound || id;
+      for (const tree of runes) {
+        for (const slot of tree.slots) {
+          const rune = slot.runes.find(r => r.id == id);
+          if (rune) return rune.name;
+        }
+      }
+      return id;
     }).join(', ');
 
-    // Actions
+    // --- Actions ---
     const actionsList = player.actions.map(a => {
-      if(a.type === "skill") return `${a.time}s - ${a.type} Skill ${a.skillId} -> ${a.target}`;
+      if (a.type === "skill") return `${a.time}s - ${a.type} Skill ${a.skillId} -> ${a.target}`;
       return `${a.time}s - ${a.type}`;
     }).join('<br>');
 
@@ -71,3 +61,4 @@ async function init() {
 }
 
 init();
+
