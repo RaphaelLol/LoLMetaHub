@@ -18,10 +18,8 @@ async function afficherMatch(match, champions, items, runes) {
     const playerDiv = document.createElement('div');
     playerDiv.classList.add('playerCard');
 
-    // Items
     const itemList = player.items.map(id => items[id]?.name || id).join(', ');
 
-    // Runes
     const runeList = player.runes.map(id => {
       let runeFound = null;
       runes.forEach(tree => {
@@ -32,7 +30,6 @@ async function afficherMatch(match, champions, items, runes) {
       return runeFound || id;
     }).join(', ');
 
-    // Actions
     const actionsList = player.actions.map(a => {
       if (a.type === "skill") return `${a.time}s - ${a.type} Skill ${a.skillId} -> ${a.target}`;
       return `${a.time}s - ${a.type}`;
@@ -50,6 +47,8 @@ async function afficherMatch(match, champions, items, runes) {
 }
 
 async function init() {
+  console.log("Initialisation de l'analyseur... ✅");
+
   const champions = await chargerJSON('champions.json');
   const items = await chargerJSON('item.json').then(d => d.data);
   const runes = await chargerJSON('runesReforged.json');
@@ -58,31 +57,36 @@ async function init() {
   const importBtn = document.getElementById('importBtn');
   const importInput = document.getElementById('importInput');
 
-  // Message initial
   container.innerHTML = "<p>Aucun match chargé pour le moment.</p>";
 
-  // Clic sur le bouton → ouvre le sélecteur de fichiers
-  importBtn.addEventListener('click', () => importInput.click());
+  // ✅ Vérifie que les éléments existent bien avant d’ajouter les events
+  if (importBtn && importInput) {
+    importBtn.addEventListener('click', () => {
+      console.log("Bouton Importer cliqué !");
+      importInput.click();
+    });
 
-  // Lecture du fichier sélectionné
-  importInput.addEventListener('change', event => {
-    const file = event.target.files[0];
-    if (!file) return;
+    importInput.addEventListener('change', event => {
+      const file = event.target.files[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async e => {
-      try {
-        const matchData = JSON.parse(e.target.result);
-        await afficherMatch(matchData, champions, items, runes);
-      } catch (err) {
-        console.error("Erreur lors du chargement du fichier :", err);
-        container.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
-      }
-    };
-    reader.readAsText(file);
-  });
+      console.log("Fichier importé :", file.name);
+
+      const reader = new FileReader();
+      reader.onload = async e => {
+        try {
+          const matchData = JSON.parse(e.target.result);
+          await afficherMatch(matchData, champions, items, runes);
+        } catch (err) {
+          console.error("Erreur JSON :", err);
+          container.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
+        }
+      };
+      reader.readAsText(file);
+    });
+  } else {
+    console.error("Impossible de trouver le bouton ou l'input d'import !");
+  }
 }
-
-init();
 
 init();
