@@ -1,51 +1,38 @@
-async function chargerJSON(url) {
-  console.log("Chargement de :", url);
-  const res = await fetch(url);
-  if (!res.ok) {
-    console.error("Erreur en chargeant", url, res.status);
-    return null;
-  }
-  return await res.json();
-}
-
 async function init() {
-  console.log("Initialisation de l'analyseur...");
-
   const match = await chargerJSON('mockMatch.json');
   const champions = await chargerJSON('champions.json');
-  const itemsRaw = await chargerJSON('item.json');
+  const items = await chargerJSON('item.json').then(data => data.data);
   const runes = await chargerJSON('runesReforged.json');
 
-  if (!match || !champions || !itemsRaw || !runes) {
-    console.error("❌ Un des fichiers JSON n’a pas pu être chargé !");
+  const container = document.getElementById('matchContainer');
+
+  if (!match.players || match.players.length === 0) {
+    container.innerHTML = "<p>Aucun match à analyser pour le moment.</p>";
     return;
   }
-
-  const items = itemsRaw.data;
-  const container = document.getElementById('matchContainer');
 
   match.players.forEach(player => {
     const champData = champions.data[player.champion];
     const playerDiv = document.createElement('div');
     playerDiv.classList.add('playerCard');
 
-    // --- Items ---
+    // Items
     const itemList = player.items.map(id => items[id]?.name || id).join(', ');
 
-    // --- Runes ---
+    // Runes
     const runeList = player.runes.map(id => {
-      for (const tree of runes) {
-        for (const slot of tree.slots) {
-          const rune = slot.runes.find(r => r.id == id);
-          if (rune) return rune.name;
-        }
-      }
-      return id;
+      let runeFound = null;
+      runes.forEach(tree => {
+        tree.slots.forEach(slot => {
+          slot.runes.forEach(r => { if (r.id == id) runeFound = r.name; });
+        });
+      });
+      return runeFound || id;
     }).join(', ');
 
-    // --- Actions ---
+    // Actions
     const actionsList = player.actions.map(a => {
-      if (a.type === "skill") return `${a.time}s - ${a.type} Skill ${a.skillId} -> ${a.target}`;
+      if(a.type === "skill") return `${a.time}s - ${a.type} Skill ${a.skillId} -> ${a.target}`;
       return `${a.time}s - ${a.type}`;
     }).join('<br>');
 
@@ -61,4 +48,3 @@ async function init() {
 }
 
 init();
-
