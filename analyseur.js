@@ -25,7 +25,7 @@ function createStatsGraph(players, container) {
     const bar = document.createElement('div');
     bar.classList.add('playerBar');
     bar.innerHTML = `
-      <strong>${player.summonerName}</strong><br>
+      <strong>${player.summonerName || player.riotIdGameName || "Joueur"}</strong><br>
       KDA: ${player.kills}/${player.deaths}/${player.assists}<br>
       CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}<br>
       Gold: ${player.goldEarned}
@@ -38,7 +38,7 @@ function createStatsGraph(players, container) {
 // Analyse pour coach
 function analyseEquipe(players, matchDuration) {
   return players.map(p => ({
-    name: p.summonerName,
+    name: p.summonerName || p.riotIdGameName || "Joueur",
     kdaRatio: p.deaths === 0 ? p.kills + p.assists : (p.kills + p.assists)/p.deaths,
     csPerMin: (p.totalMinionsKilled + p.neutralMinionsKilled) / (matchDuration/60),
     goldPerMin: p.goldEarned / (matchDuration/60)
@@ -47,7 +47,6 @@ function analyseEquipe(players, matchDuration) {
 
 async function afficherMatch(matchData, champions, items, runes) {
   const container = document.getElementById('matchContainer');
-  container.innerHTML = '';
 
   const duration = matchData.info.gameDuration;
   const durationMin = Math.floor(duration / 60);
@@ -90,7 +89,7 @@ async function afficherMatch(matchData, champions, items, runes) {
       let actionsList = player.timeline?.events?.map(e => `${Math.floor(e.timestamp/1000)}s - ${e.type}`)?.join('<br>') || "Pas d'actions disponibles";
 
       playerDiv.innerHTML = `
-        <h4>${player.summonerName} - ${champions.data[player.championId]?.name || player.championId}</h4>
+        <h4>${player.summonerName || player.riotIdGameName || "Joueur"} - ${player.championName}</h4>
         <p><strong>KDA :</strong> ${player.kills}/${player.deaths}/${player.assists}</p>
         <p><strong>CS :</strong> ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
         <p><strong>Gold :</strong> ${player.goldEarned}</p>
@@ -172,19 +171,20 @@ async function init() {
     reader.readAsText(file);
   });
 
-  // Recherche par champion
+  // Recherche par champion (corrigé)
   searchBtn.addEventListener('click', ()=>{
     const champName = searchInput.value.trim().toLowerCase();
     if(!historyData.length){
       matchContainer.innerHTML = "<p style='color:red;'>Aucun historique chargé !</p>";
       return;
     }
-    const filteredMatches = historyData.filter(m=> m.info.participants.some(p=> (champions.data[p.championId]?.name || "").toLowerCase() === champName ));
+    const filteredMatches = historyData.filter(m =>
+      m.info.participants.some(p => (p.championName || "").toLowerCase() === champName)
+    );
     if(!filteredMatches.length){
       matchContainer.innerHTML = "<p>Aucun match trouvé pour ce champion.</p>";
       return;
     }
-    // Afficher tous les matchs filtrés
     matchContainer.innerHTML = "";
     filteredMatches.forEach(m=>{
       afficherMatch(m, champions, items, runes);
@@ -193,4 +193,3 @@ async function init() {
 }
 
 init();
-
