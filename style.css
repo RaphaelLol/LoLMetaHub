@@ -1,138 +1,161 @@
 /* ==== Style global ==== */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #1e1e2f;
-    color: #ffffff;
-    margin: 0;
-    padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #12141B;
+  color: #E0E0E0;
+  margin: 0;
+  padding: 20px;
 }
-
 h1 {
-    color: #f5c518;
-    text-align: center;
-    margin-top: 50px;
+  color: #F5C518;
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-/* ==== Match Header ==== */
-.matchHeader {
-    text-align: center;
-    margin: 20px 0;
-    font-size: 1.2em;
-    color: #f5c518;
+/* ==== Conteneur des parties ==== */
+#matchContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
 }
 
-/* ==== Bloc de match ==== */
+/* ==== Bloc d’une partie ==== */
 .matchBlock {
-    display: flex;
-    justify-content: center;
-    gap: 0; /* bleu et rouge collés */
-    margin-bottom: 30px;
-    border: 2px solid #444;
-    border-radius: 15px;
-    overflow: hidden;
-    background-color: #2a2a3d;
+  border: 1px solid #2C2F3A;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #1E2028;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ==== Colonnes équipes ==== */
+/* ==== Header de la partie ==== */
+.matchHeader {
+  padding: 12px 20px;
+  background-color: #2C2F3A;
+  color: #F5C518;
+  font-size: 1.1em;
+  text-align: center;
+}
+
+/* ==== Wrapper équipes côte‑à‑côte ==== */
+.teamsWrapper {
+  display: flex;
+  width: 100%;
+}
+
+/* ==== Colonnes d’équipes ==== */
 .teamColumn {
-    flex: 1;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
+  flex: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
+.teamBlue {
+  background-color: #162033;
+  border-right: 1px solid #2C2F3A;
+}
+.teamRed {
+  background-color: #330F11;
+}
+
+/* ==== Titre d’équipe ==== */
 .teamColumn h3 {
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #f5c518;
+  margin: 0 0 10px 0;
+  text-align: center;
+  color: #F5C518;
+  font-size: 1.2em;
 }
 
-/* ==== Couleurs spécifiques ==== */
-.teamBlue { background-color: #1f2a3d; border-right: 1px solid #444; }
-.teamRed { background-color: #3d1f1f; border-left: 1px solid #444; }
-
-/* ==== Joueurs ==== */
+/* ==== Cartes joueurs ==== */
 .playerCard {
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 10px;
-    background-color: #2a2a3d;
-    border: 1px solid #555;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: #262A35;
+  border: 1px solid #3A3F4C;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-
 .playerCard:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 10px rgba(0,0,0,0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+}
+.playerCard h4 {
+  margin: 0 0 8px 0;
+  color: #F5C518;
+  font-size: 1em;
+}
+.playerCard p {
+  margin: 4px 0;
+  font-size: 0.9em;
 }
 
-.playerCard h4 {
-    margin: 0 0 5px 0;
-    color: #f5c518;
-    font-size: 1em;
+/* ==== Images champions ==== */
+.playerCard img.championImg {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+/* ==== Items affichage ==== */
+.itemBox {
+  display: inline-block;
+  margin: 4px;
+  text-align: center;
+  color: #E0E0E0;
+}
+.itemBox img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: block;
+  margin: 0 auto 4px auto;
+}
+.itemBox span {
+  font-size: 0.75em;
+  display: block;
+}
+
+/* ==== Runes affichage ==== */
+.runeBox {
+  display: inline-block;
+  background-color: #3A3F4C;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin: 2px 2px 2px 0;
+  font-size: 0.75em;
+  color: #E0E0E0;
 }
 
 /* ==== Graphes KDA/CS/Gold ==== */
 .statsGraph {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
 }
-
 .playerBar {
-    background-color: #333;
-    padding: 8px;
-    border-radius: 5px;
-    font-size: 0.9em;
-    text-align: center;
-    color: white;
+  padding: 8px;
+  background-color: #2C2F3A;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: #E0E0E0;
 }
 
 /* ==== Analyse coach ==== */
 .coachStats {
-    margin-top: 10px;
-    padding: 8px;
-    background-color: #222;
-    border-radius: 8px;
-    color: #f5c518;
+  margin-top: 12px;
+  padding: 10px;
+  background-color: #1B1D25;
+  border-radius: 6px;
+  color: #F5C518;
 }
-
+.coachStats h4 {
+  margin: 0 0 8px 0;
+}
 .coachStats p {
-    margin: 2px 0;
-    font-size: 0.9em;
-}
-
-/* ==== Items ==== */
-.itemBox { 
-    display: inline-block; 
-    text-align: center; 
-    margin: 2px; 
-}
-
-.itemBox img { 
-    width: 40px; 
-    height: 40px; 
-    border-radius: 4px; 
-    display: block;
-    margin: 0 auto 2px auto;
-}
-
-.itemBox span {
-    font-size: 0.8em;
-    display: block;
-    color: white;
-}
-
-/* ==== Runes ==== */
-.runeBox {
-    display: inline-block;
-    background-color: #444;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin: 2px;
-    font-size: 0.8em;
-    color: #fff;
+  margin: 2px 0;
+  font-size: 0.85em;
 }
