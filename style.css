@@ -4,40 +4,13 @@ body {
     background-color: #1e1e2f;
     color: #ffffff;
     margin: 0;
-    padding: 0 20px;
+    padding: 20px;
 }
 
 h1 {
     color: #f5c518;
     text-align: center;
     margin-top: 50px;
-}
-
-/* ==== Menu onglets ==== */
-.menu {
-    margin-top: 20px;
-    text-align: center;
-}
-
-a.onglet {
-    color: #f5c518;
-    text-decoration: none;
-    font-weight: bold;
-    margin: 0 10px;
-    padding: 8px 15px;
-    border-radius: 5px;
-    display: inline-block;
-    background-color: #2a2a3f;
-    transition: 0.2s;
-}
-
-a.onglet:hover {
-    color: white;
-}
-
-a.onglet.actif {
-    background-color: #f5c518;
-    color: black;
 }
 
 /* ==== Match Header ==== */
@@ -48,125 +21,118 @@ a.onglet.actif {
     color: #f5c518;
 }
 
-/* Wrapper principal pour chaque match */
-#matchContainer .teamsWrapper {
+/* ==== Bloc de match ==== */
+.matchBlock {
     display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap; /* pour les petits écrans */
-}
+    justify-content: center;
+    gap: 0; /* bleu et rouge collés */
+    margin-bottom: 30px;
+    border: 2px solid #444;
+    border-radius: 15px;
+    overflow: hidden;
+    background-color: #2a2a3d;
 }
 
-/* Colonnes d'équipes */
+/* ==== Colonnes équipes ==== */
 .teamColumn {
     flex: 1;
-    min-width: 300px; /* largeur minimale pour éviter le squeeze */
     padding: 15px;
-    border-radius: 15px;
-    border: 2px solid #444;
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 
-.teamColumn.teamBlue { background-color: #1f2a3d; border-color: #2a3b55; }
-.teamColumn.teamRed { background-color: #3d1f1f; border-color: #552a2a; }
-
 .teamColumn h3 {
-    margin-top: 0;
     text-align: center;
-    font-size: 1.3em;
+    margin-top: 0;
+    margin-bottom: 15px;
     color: #f5c518;
 }
 
+/* ==== Couleurs spécifiques ==== */
+.teamBlue { background-color: #1f2a3d; border-right: 1px solid #444; }
+.teamRed { background-color: #3d1f1f; border-left: 1px solid #444; }
+
 /* ==== Joueurs ==== */
 .playerCard {
-    padding: 15px;
-    border-radius: 12px;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
     background-color: #2a2a3d;
     border: 1px solid #555;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .playerCard:hover {
     transform: scale(1.02);
-    box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    box-shadow: 0 0 10px rgba(0,0,0,0.7);
 }
 
 .playerCard h4 {
-    margin: 0 0 10px 0;
+    margin: 0 0 5px 0;
     color: #f5c518;
+    font-size: 1em;
 }
 
-/* ==== Stats graphiques ==== */
+/* ==== Graphes KDA/CS/Gold ==== */
 .statsGraph {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
     margin-top: 10px;
 }
 
 .playerBar {
-    width: 100%;
-    padding: 10px;
     background-color: #333;
-    border-radius: 6px;
-    text-align: center;
+    padding: 8px;
+    border-radius: 5px;
     font-size: 0.9em;
+    text-align: center;
     color: white;
 }
 
 /* ==== Analyse coach ==== */
 .coachStats {
     margin-top: 10px;
-    padding: 10px;
+    padding: 8px;
     background-color: #222;
-    border-radius: 10px;
+    border-radius: 8px;
     color: #f5c518;
 }
 
-.coachStats h4 {
-    margin-top: 0;
+.coachStats p {
+    margin: 2px 0;
+    font-size: 0.9em;
 }
 
 /* ==== Items ==== */
-.build-container { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); 
-  gap: 10px; 
-  margin-bottom: 10px; 
+.itemBox { 
+    display: inline-block; 
+    text-align: center; 
+    margin: 2px; 
 }
 
-.item { 
-  background: #2a2a3d; 
-  border-radius: 8px; 
-  padding: 5px; 
-  text-align: center; 
-  color: white; 
+.itemBox img { 
+    width: 40px; 
+    height: 40px; 
+    border-radius: 4px; 
+    display: block;
+    margin: 0 auto 2px auto;
 }
 
-.item img { 
-  width: 48px; 
-  height: 48px; 
-  border-radius: 4px; 
-  margin-bottom: 5px;
+.itemBox span {
+    font-size: 0.8em;
+    display: block;
+    color: white;
 }
 
 /* ==== Runes ==== */
-.runesList, .runes-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: center;
-    margin-bottom: 10px;
+.runeBox {
+    display: inline-block;
+    background-color: #444;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 2px;
+    font-size: 0.8em;
+    color: #fff;
 }
-
-.rune, .rune-box { 
-    background-color: #444; 
-    padding: 3px 5px; 
-    border-radius: 5px; 
-    font-size: 12px; 
-    text-align: center;
-}
-
