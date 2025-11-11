@@ -12,7 +12,7 @@ function createStatsGraph(players, container) {
     const bar = document.createElement('div');
     bar.classList.add('playerBar');
     bar.innerHTML = `
-      <strong>${player.summonerName || "Joueur"}</strong><br>
+      <strong>${player.summonerName}</strong><br>
       KDA: ${player.kills}/${player.deaths}/${player.assists}<br>
       CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}<br>
       Gold: ${player.goldEarned}
@@ -60,8 +60,8 @@ async function afficherMatch(matchData, champions, items, runes) {
   matchBlock.appendChild(teamsWrapper);
 
   const teams = [
-    { data: team100, name: "Bleue", win: team100.some(p => p.win) },
-    { data: team200, name: "Rouge", win: team200.some(p => p.win) }
+    { data: team100, name: "Bleue", win: team100[0].win },
+    { data: team200, name: "Rouge", win: team200[0].win }
   ];
 
   teams.forEach((team, idx) => {
@@ -101,9 +101,9 @@ async function afficherMatch(matchData, champions, items, runes) {
         <p><strong>CS :</strong> ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
         <p><strong>Gold :</strong> ${player.goldEarned}</p>
         <p><strong>Objets :</strong><br>
-          ${itemList.map(it => `<div class="itemBox"><img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/item/${it.img}" alt="${it.name}">${it.name}</div>`).join('')}
+          ${itemList.map(it => `<div class="itemBox"><img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/item/${it.img}" alt="${it.name}"><span>${it.name}</span></div>`).join('')}
         </p>
-        <p><strong>Runes :</strong> ${runeList.map(r => `<span class="runeBox">${r}</span>`).join('')}</p>
+        <p><strong>Runes :</strong><br>${runeList.map(r => `<span class="runeBox">${r}</span>`).join('')}</p>
       `;
       teamDiv.appendChild(playerDiv);
     });
@@ -154,9 +154,9 @@ async function init() {
     reader.onload = async ev => {
       try {
         const matchData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = ""; // vider le container
+        matchContainer.innerHTML = "";
         await afficherMatch(matchData, champions, items, runes);
-      } catch (err) {
+      } catch {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
     };
@@ -172,8 +172,8 @@ async function init() {
     reader.onload = ev => {
       try {
         historyData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = "<p>Historique chargé. Utilisez la recherche ci-dessus pour filtrer un champion.</p>";
-      } catch (err) {
+        matchContainer.innerHTML = "<p>Historique chargé. Recherchez un champion pour afficher plusieurs parties.</p>";
+      } catch {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
     };
@@ -197,7 +197,7 @@ async function init() {
       return;
     }
 
-    matchContainer.innerHTML = ""; // on vide container
+    matchContainer.innerHTML = "";
     filteredMatches.forEach(m => afficherMatch(m, champions, items, runes));
   });
 }
