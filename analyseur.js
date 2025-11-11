@@ -60,9 +60,14 @@ async function afficherMatch(matchData, champions, items, runes) {
   const team100 = matchData.info.participants.filter(p => p.teamId === 100);
   const team200 = matchData.info.participants.filter(p => p.teamId === 200);
 
+  // Nouveau container pour afficher les deux équipes en colonnes
+  const teamsWrapper = document.createElement('div');
+  teamsWrapper.classList.add('teamsWrapper'); // style display: flex; justify-content: space-between;
+  container.appendChild(teamsWrapper);
+
   [team100, team200].forEach((team, idx) => {
     const teamDiv = document.createElement('div');
-    teamDiv.classList.add('teamContainer');
+    teamDiv.classList.add('teamColumn');
     teamDiv.innerHTML = `<h3>Équipe ${idx===0?"Bleue":"Rouge"}</h3>`;
 
     team.forEach(player => {
@@ -117,7 +122,7 @@ async function afficherMatch(matchData, champions, items, runes) {
     });
     teamDiv.appendChild(coachDiv);
 
-    container.appendChild(teamDiv);
+    teamsWrapper.appendChild(teamDiv);
   });
 }
 
