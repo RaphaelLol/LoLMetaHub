@@ -1,23 +1,10 @@
 // ==== analyseur.js ====
 
-// Charger un JSON depuis une URL
+// Charger un JSON
 async function chargerJSON(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Erreur de chargement : " + url);
   return await res.json();
-}
-
-// Convertir les runes en noms
-function getRuneNames(runeIds, runesData) {
-  return runeIds.map(id => {
-    let name = null;
-    runesData.forEach(tree => {
-      tree.slots.forEach(slot => {
-        slot.runes.forEach(r => { if (r.id == id) name = r.name; });
-      });
-    });
-    return name || id;
-  });
 }
 
 // Crée un petit graphique KDA/CS/Gold
@@ -49,15 +36,14 @@ function analyseEquipe(players, matchDuration) {
 }
 
 // Affichage d’un match
-async function afficherMatch(matchData, champions, items, runes) {
+async function afficherMatch(matchData, champions, items, runes, append = true) {
   const container = document.getElementById('matchContainer');
-  container.innerHTML = ''; // vide le container pour chaque match
+  if(!append) container.innerHTML = ''; // reset si nécessaire
 
   const duration = matchData.info.gameDuration;
   const durationMin = Math.floor(duration / 60);
   const durationSec = duration % 60;
 
-  // Header du match
   const header = document.createElement('div');
   header.classList.add('matchHeader');
   header.innerHTML = `<h2>Mode : ${matchData.info.gameMode} | Durée : ${durationMin}m ${durationSec}s</h2>`;
@@ -66,71 +52,72 @@ async function afficherMatch(matchData, champions, items, runes) {
   const team100 = matchData.info.participants.filter(p => p.teamId === 100);
   const team200 = matchData.info.participants.filter(p => p.teamId === 200);
 
-  // Wrapper pour équipes côte à côte
-  const teamsWrapper = document.createElement('div');
-  teamsWrapper.classList.add('teamsWrapper');
-  container.appendChild(teamsWrapper);
+  const matchBlock = document.createElement('div');
+  matchBlock.classList.add('matchBlock');
 
-  [team100, team200].forEach((team, idx) => {
-    const teamDiv = document.createElement('div');
-    teamDiv.classList.add('teamColumn');
-    teamDiv.classList.add(idx === 0 ? 'teamBlue' : 'teamRed');
-    teamDiv.innerHTML = `<h3>Équipe ${idx === 0 ? "Bleue" : "Rouge"}</h3>`;
-
-    // Joueurs de l’équipe
-    team.forEach(player => {
-      const playerDiv = document.createElement('div');
-      playerDiv.classList.add('playerCard');
-
-      // Items
-      const itemList = [];
-      for(let i=0; i<=6; i++){
-        const id = player[`item${i}`];
-        if(id && items[id]) itemList.push({name: items[id].name, img: items[id].image?.full});
-      }
-
-      // Runes
-      const runeList = [];
-      player.perks.styles.forEach(style => {
-        style.selections.forEach(s => {
-          const r = runes.find(rn => rn.id === s.perk);
-          if(r) runeList.push(r.name);
-        });
-      });
-
-      // Actions
-      const actionsList = player.timeline?.events?.map(e => `${Math.floor(e.timestamp/1000)}s - ${e.type}`)?.join('<br>') || "Pas d'actions disponibles";
-
-      playerDiv.innerHTML = `
-        <h4>${player.summonerName || player.riotIdGameName || "Joueur"} - ${player.championName}</h4>
-        <p><strong>KDA :</strong> ${player.kills}/${player.deaths}/${player.assists}</p>
-        <p><strong>CS :</strong> ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
-        <p><strong>Gold :</strong> ${player.goldEarned}</p>
-        <p><strong>Objets :</strong><br>
-          ${itemList.map(it => `<div class="itemBox"><img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/item/${it.img}" alt="${it.name}">${it.name}</div>`).join('')}
-        </p>
-        <p><strong>Runes :</strong> ${runeList.map(r => `<span class="runeBox">${r}</span>`).join('')}</p>
-        <p><strong>Actions :</strong><br>${actionsList}</p>
-      `;
-      teamDiv.appendChild(playerDiv);
-    });
-
-    // Graphiques et stats coach
-    createStatsGraph(team, teamDiv);
-
-    const coachStats = analyseEquipe(team, duration);
-    const coachDiv = document.createElement('div');
-    coachDiv.classList.add('coachStats');
-    coachDiv.innerHTML = `<h4>Analyse pour coach :</h4>`;
-    coachStats.forEach(s => {
-      const p = document.createElement('p');
-      p.innerText = `${s.name} → KDA ratio: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
-      coachDiv.appendChild(p);
-    });
-    teamDiv.appendChild(coachDiv);
-
-    teamsWrapper.appendChild(teamDiv);
+  // Équipe Bleu
+  const teamBlueDiv = document.createElement('div');
+  teamBlueDiv.classList.add('teamColumn', 'teamBlue');
+  teamBlueDiv.innerHTML = `<h3>Équipe Bleue</h3>`;
+  team100.forEach(player => {
+    const playerDiv = document.createElement('div');
+    playerDiv.classList.add('playerCard');
+    playerDiv.innerHTML = `
+      <h4>${player.summonerName || player.riotIdGameName || "Joueur"} - ${player.championName}</h4>
+      <p>KDA: ${player.kills}/${player.deaths}/${player.assists}</p>
+      <p>CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
+      <p>Gold: ${player.goldEarned}</p>
+    `;
+    teamBlueDiv.appendChild(playerDiv);
   });
+
+  // Équipe Rouge
+  const teamRedDiv = document.createElement('div');
+  teamRedDiv.classList.add('teamColumn', 'teamRed');
+  teamRedDiv.innerHTML = `<h3>Équipe Rouge</h3>`;
+  team200.forEach(player => {
+    const playerDiv = document.createElement('div');
+    playerDiv.classList.add('playerCard');
+    playerDiv.innerHTML = `
+      <h4>${player.summonerName || player.riotIdGameName || "Joueur"} - ${player.championName}</h4>
+      <p>KDA: ${player.kills}/${player.deaths}/${player.assists}</p>
+      <p>CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
+      <p>Gold: ${player.goldEarned}</p>
+    `;
+    teamRedDiv.appendChild(playerDiv);
+  });
+
+  // Graphes KDA/CS/Gold
+  createStatsGraph(team100, teamBlueDiv);
+  createStatsGraph(team200, teamRedDiv);
+
+  // Stats pour coach
+  const coachBlueStats = analyseEquipe(team100, duration);
+  const coachRedStats = analyseEquipe(team200, duration);
+
+  const coachDivBlue = document.createElement('div');
+  coachDivBlue.classList.add('coachStats');
+  coachDivBlue.innerHTML = `<h4>Analyse coach</h4>`;
+  coachBlueStats.forEach(s => {
+    const p = document.createElement('p');
+    p.innerText = `${s.name} → KDA: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
+    coachDivBlue.appendChild(p);
+  });
+  teamBlueDiv.appendChild(coachDivBlue);
+
+  const coachDivRed = document.createElement('div');
+  coachDivRed.classList.add('coachStats');
+  coachRedStats.forEach(s => {
+    const p = document.createElement('p');
+    p.innerText = `${s.name} → KDA: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
+    coachDivRed.appendChild(p);
+  });
+  teamRedDiv.appendChild(coachDivRed);
+
+  // Ajout équipes collées
+  matchBlock.appendChild(teamBlueDiv);
+  matchBlock.appendChild(teamRedDiv);
+  container.appendChild(matchBlock);
 }
 
 // Initialisation
@@ -149,56 +136,54 @@ async function init() {
 
   let historyData = [];
 
-  // Import match simple
   importBtn.addEventListener('click', () => importInput.click());
   importInput.addEventListener('change', e => {
     const file = e.target.files[0];
-    if(!file) return;
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = async ev => {
-      try{
+      try {
         const matchData = JSON.parse(ev.target.result);
-        await afficherMatch(matchData, champions, items, runes);
-      } catch(err){
+        await afficherMatch(matchData, champions, items, runes, true);
+      } catch (err) {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
     };
     reader.readAsText(file);
   });
 
-  // Import historique
   importHistoryBtn.addEventListener('click', () => importHistoryInput.click());
   importHistoryInput.addEventListener('change', e => {
     const file = e.target.files[0];
-    if(!file) return;
+    if (!file) return;
     const reader = new FileReader();
     reader.onload = async ev => {
-      try{
+      try {
         historyData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = "<p>Historique chargé, utilisez la recherche ci-dessus pour filtrer un champion.</p>";
-      } catch(err){
+        matchContainer.innerHTML = "<p>Historique chargé.</p>";
+        historyData.forEach(match => afficherMatch(match, champions, items, runes, true));
+      } catch (err) {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
     };
     reader.readAsText(file);
   });
 
-  // Recherche par champion
   searchBtn.addEventListener('click', () => {
     const champName = searchInput.value.trim().toLowerCase();
-    if(!historyData.length){
+    if (!historyData.length) {
       matchContainer.innerHTML = "<p style='color:red;'>Aucun historique chargé !</p>";
       return;
     }
     const filteredMatches = historyData.filter(m =>
       m.info.participants.some(p => (p.championName || "").toLowerCase() === champName)
     );
-    if(!filteredMatches.length){
+    if (!filteredMatches.length) {
       matchContainer.innerHTML = "<p>Aucun match trouvé pour ce champion.</p>";
       return;
     }
-    matchContainer.innerHTML = "";
-    filteredMatches.forEach(m => afficherMatch(m, champions, items, runes));
+    matchContainer.innerHTML = '';
+    filteredMatches.forEach(m => afficherMatch(m, champions, items, runes, true));
   });
 }
 
