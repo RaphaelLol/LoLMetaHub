@@ -1,13 +1,10 @@
-// ==== analyseur.js ====
-
-// Charger un JSON
 async function chargerJSON(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Erreur de chargement : " + url);
   return await res.json();
 }
 
-// Crée un graphique KDA/CS/Gold
+// Graphique KDA / CS / Gold
 function createStatsGraph(players, container) {
   const graphDiv = document.createElement('div');
   graphDiv.classList.add('statsGraph');
@@ -15,7 +12,7 @@ function createStatsGraph(players, container) {
     const bar = document.createElement('div');
     bar.classList.add('playerBar');
     bar.innerHTML = `
-      <strong>${player.summonerName || player.riotIdGameName || "Joueur"}</strong><br>
+      <strong>${player.summonerName || "Joueur"}</strong><br>
       KDA: ${player.kills}/${player.deaths}/${player.assists}<br>
       CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}<br>
       Gold: ${player.goldEarned}
@@ -25,20 +22,23 @@ function createStatsGraph(players, container) {
   container.appendChild(graphDiv);
 }
 
-// Analyse pour coach
+// Stats pour coach
 function analyseEquipe(players, matchDuration) {
   return players.map(p => ({
-    name: p.summonerName || p.riotIdGameName || "Joueur",
+    name: p.summonerName || "Joueur",
     kdaRatio: p.deaths === 0 ? p.kills + p.assists : (p.kills + p.assists)/p.deaths,
     csPerMin: (p.totalMinionsKilled + p.neutralMinionsKilled) / (matchDuration/60),
     goldPerMin: p.goldEarned / (matchDuration/60)
   }));
 }
 
-// Affichage d’un match
+// Affiche un match
 async function afficherMatch(matchData, champions, items, runes) {
   const container = document.getElementById('matchContainer');
-  container.innerHTML = ''; // toujours reset pour ne montrer qu'un match
+
+  // Bloc du match
+  const matchBlock = document.createElement('div');
+  matchBlock.classList.add('matchBlock');
 
   const duration = matchData.info.gameDuration;
   const durationMin = Math.floor(duration / 60);
@@ -46,71 +46,87 @@ async function afficherMatch(matchData, champions, items, runes) {
 
   const header = document.createElement('div');
   header.classList.add('matchHeader');
-  header.innerHTML = `<h2>Mode : ${matchData.info.gameMode} | Durée : ${durationMin}m ${durationSec}s</h2>`;
-  container.appendChild(header);
+  header.innerHTML = `
+    <h2>${matchData.info.gameMode} | Durée : ${durationMin}m ${durationSec}s</h2>
+  `;
+  matchBlock.appendChild(header);
 
+  // Séparer les équipes
   const team100 = matchData.info.participants.filter(p => p.teamId === 100);
   const team200 = matchData.info.participants.filter(p => p.teamId === 200);
 
-  const matchBlock = document.createElement('div');
-  matchBlock.classList.add('matchBlock'); // container pour bleu et rouge
+  const teamsWrapper = document.createElement('div');
+  teamsWrapper.classList.add('teamsWrapper'); // display: flex; justify-content: center
+  matchBlock.appendChild(teamsWrapper);
+
+  const teams = [
+    { data: team100, name: "Bleue", win: team100.some(p => p.win) },
+    { data: team200, name: "Rouge", win: team200.some(p => p.win) }
+  ];
+
+  teams.forEach((team, idx) => {
+    const teamDiv = document.createElement('div');
+    teamDiv.classList.add('teamColumn');
+    teamDiv.classList.add(team.name === "Bleue" ? "teamBlue" : "teamRed");
+
+    teamDiv.innerHTML = `<h3>Équipe ${team.name} ${team.win ? "(Victoire)" : "(Défaite)"}</h3>`;
+
+    team.data.forEach(player => {
+      const playerDiv = document.createElement('div');
+      playerDiv.classList.add('playerCard');
+
+      // Items
+      const itemList = [];
+      for (let i = 0; i <= 6; i++) {
+        const id = player[`item${i}`];
+        if (id && items[id]) itemList.push({ name: items[id].name, img: items[id].image?.full });
+      }
+
+      // Runes
+      const runeList = [];
+      player.perks.styles.forEach(style => {
+        style.selections.forEach(s => {
+          const r = runes.find(rn => rn.id === s.perk);
+          if (r) runeList.push(r.name);
+        });
+      });
+
+      playerDiv.innerHTML = `
+        <h4>
+          <img src="http://ddragon.leagueoflegends.com/cdn/13.19.1/img/champion/${player.championName}.png" 
+               alt="${player.championName}" class="championImg">
+          ${player.summonerName} - ${player.championName}
+        </h4>
+        <p><strong>KDA :</strong> ${player.kills}/${player.deaths}/${player.assists}</p>
+        <p><strong>CS :</strong> ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
+        <p><strong>Gold :</strong> ${player.goldEarned}</p>
+        <p><strong>Objets :</strong><br>
+          ${itemList.map(it => `<div class="itemBox"><img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/item/${it.img}" alt="${it.name}">${it.name}</div>`).join('')}
+        </p>
+        <p><strong>Runes :</strong> ${runeList.map(r => `<span class="runeBox">${r}</span>`).join('')}</p>
+      `;
+      teamDiv.appendChild(playerDiv);
+    });
+
+    // Graphiques
+    createStatsGraph(team.data, teamDiv);
+
+    // Analyse coach
+    const coachStats = analyseEquipe(team.data, duration);
+    const coachDiv = document.createElement('div');
+    coachDiv.classList.add('coachStats');
+    coachDiv.innerHTML = `<h4>Analyse pour coach :</h4>`;
+    coachStats.forEach(s => {
+      const p = document.createElement('p');
+      p.innerText = `${s.name} → KDA ratio: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
+      coachDiv.appendChild(p);
+    });
+    teamDiv.appendChild(coachDiv);
+
+    teamsWrapper.appendChild(teamDiv);
+  });
+
   container.appendChild(matchBlock);
-
-  // Équipe Bleue
-  const teamBlueDiv = document.createElement('div');
-  teamBlueDiv.classList.add('teamColumn', 'teamBlue');
-  teamBlueDiv.innerHTML = `<h3>Équipe Bleue</h3>`;
-  team100.forEach(player => {
-    const playerDiv = document.createElement('div');
-    playerDiv.classList.add('playerCard');
-    playerDiv.innerHTML = `
-      <h4>${player.summonerName || player.riotIdGameName || "Joueur"} - ${player.championName}</h4>
-      <p>KDA: ${player.kills}/${player.deaths}/${player.assists}</p>
-      <p>CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
-      <p>Gold: ${player.goldEarned}</p>
-    `;
-    teamBlueDiv.appendChild(playerDiv);
-  });
-  createStatsGraph(team100, teamBlueDiv); // graphes KDA/CS/Gold
-
-  // Coach stats
-  const coachBlueDiv = document.createElement('div');
-  coachBlueDiv.classList.add('coachStats');
-  analyseEquipe(team100, duration).forEach(s => {
-    const p = document.createElement('p');
-    p.innerText = `${s.name} → KDA: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
-    coachBlueDiv.appendChild(p);
-  });
-  teamBlueDiv.appendChild(coachBlueDiv);
-
-  // Équipe Rouge
-  const teamRedDiv = document.createElement('div');
-  teamRedDiv.classList.add('teamColumn', 'teamRed');
-  teamRedDiv.innerHTML = `<h3>Équipe Rouge</h3>`;
-  team200.forEach(player => {
-    const playerDiv = document.createElement('div');
-    playerDiv.classList.add('playerCard');
-    playerDiv.innerHTML = `
-      <h4>${player.summonerName || player.riotIdGameName || "Joueur"} - ${player.championName}</h4>
-      <p>KDA: ${player.kills}/${player.deaths}/${player.assists}</p>
-      <p>CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
-      <p>Gold: ${player.goldEarned}</p>
-    `;
-    teamRedDiv.appendChild(playerDiv);
-  });
-  createStatsGraph(team200, teamRedDiv);
-
-  const coachRedDiv = document.createElement('div');
-  coachRedDiv.classList.add('coachStats');
-  analyseEquipe(team200, duration).forEach(s => {
-    const p = document.createElement('p');
-    p.innerText = `${s.name} → KDA: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
-    coachRedDiv.appendChild(p);
-  });
-  teamRedDiv.appendChild(coachRedDiv);
-
-  matchBlock.appendChild(teamBlueDiv);
-  matchBlock.appendChild(teamRedDiv);
 }
 
 // Initialisation
@@ -138,6 +154,7 @@ async function init() {
     reader.onload = async ev => {
       try {
         const matchData = JSON.parse(ev.target.result);
+        matchContainer.innerHTML = ""; // vider le container
         await afficherMatch(matchData, champions, items, runes);
       } catch (err) {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
@@ -146,16 +163,16 @@ async function init() {
     reader.readAsText(file);
   });
 
-  // Import historique (stockage mais **pas affichage automatique**)
+  // Import historique
   importHistoryBtn.addEventListener('click', () => importHistoryInput.click());
   importHistoryInput.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async ev => {
+    reader.onload = ev => {
       try {
         historyData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = "<p>Historique chargé. Faites une recherche pour voir les parties.</p>";
+        matchContainer.innerHTML = "<p>Historique chargé. Utilisez la recherche ci-dessus pour filtrer un champion.</p>";
       } catch (err) {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
@@ -170,15 +187,17 @@ async function init() {
       matchContainer.innerHTML = "<p style='color:red;'>Aucun historique chargé !</p>";
       return;
     }
+
     const filteredMatches = historyData.filter(m =>
       m.info.participants.some(p => (p.championName || "").toLowerCase() === champName)
     );
+
     if (!filteredMatches.length) {
       matchContainer.innerHTML = "<p>Aucun match trouvé pour ce champion.</p>";
       return;
     }
-    // Affiche toutes les parties filtrées
-    matchContainer.innerHTML = '';
+
+    matchContainer.innerHTML = ""; // on vide container
     filteredMatches.forEach(m => afficherMatch(m, champions, items, runes));
   });
 }
