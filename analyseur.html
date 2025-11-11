@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Analyseur de match</title>
+  <title>Analyseur de match / Historique</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body {
@@ -12,7 +12,7 @@
       text-align: center;
       padding: 20px;
     }
-    #importInput {
+    #importInput, #importHistoryInput {
       display: none;
     }
     button {
@@ -25,61 +25,60 @@
       color: #000;
       margin-bottom: 20px;
     }
-    button:hover {
-      background: #ffd84d;
-    }
-    .playerCard {
+    button:hover { background: #ffd84d; }
+    .playerCard, .teamContainer, .matchCard {
       border: 1px solid #333;
       border-radius: 10px;
       margin: 15px auto;
       padding: 15px;
-      max-width: 600px;
+      max-width: 700px;
       background: #1a1a1a;
       text-align: left;
     }
-    a {
-      display: block;
-      color: #f5c518;
-      margin-top: 20px;
-      text-decoration: none;
+    .matchHeader { color: #f5c518; text-align:center; margin-bottom: 15px; }
+    input[type="text"] {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #555;
+      margin-bottom: 15px;
+      width: 200px;
     }
+    .runeBox {
+      display: inline-block;
+      background: #2a2a3d;
+      padding: 3px 6px;
+      margin: 2px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .itemBox {
+      display: flex;
+      align-items: center;
+      margin: 4px 0;
+    }
+    .itemBox img { width: 32px; height: 32px; margin-right: 6px; }
+    .statsGraph { display: flex; justify-content: space-around; margin-top: 15px; }
+    .playerBar { width: 140px; padding: 5px; background: #333; color: white; border-radius: 5px; text-align: center; font-size: 12px; }
+    .coachStats { margin-top: 10px; padding: 5px; background: #222; border-radius: 5px; font-size: 12px; }
   </style>
 </head>
 <body>
-  <h1>Analyseur de match</h1>
+  <h1>Analyseur de match / Historique</h1>
+
   <button id="importBtn">📁 Importer un match (.json)</button>
   <input type="file" id="importInput" accept=".json">
 
-  <!-- 🔍 Bloc de recherche ajouté ici -->
-  <div id="search-bar" style="background:#1a1a1a; border-radius:10px; padding:15px; margin:20px auto; max-width:600px; text-align:left;">
-    <h2 style="color:#f5c518; margin-bottom:10px;">🔍 Rechercher un match</h2>
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <input 
-        id="playerName" 
-        type="text" 
-        placeholder="Nom du joueur" 
-        style="flex:1; padding:10px; border-radius:6px; border:none; background:#333; color:white;"
-      />
-      <input 
-        id="championName" 
-        type="text" 
-        placeholder="Nom du champion" 
-        style="flex:1; padding:10px; border-radius:6px; border:none; background:#333; color:white;"
-      />
-      <button 
-        id="searchButton" 
-        style="background:#f5c518; border:none; padding:10px 20px; border-radius:8px; color:#000; font-weight:bold; cursor:pointer;"
-      >
-        Rechercher
-      </button>
-    </div>
+  <button id="importHistoryBtn">📁 Importer historique du joueur (.json)</button>
+  <input type="file" id="importHistoryInput" accept=".json">
+
+  <div>
+    <input type="text" id="championSearch" placeholder="Filtrer par champion">
+    <button id="searchBtn">🔍 Rechercher</button>
   </div>
-  <!-- 🟨 Fin du bloc ajouté -->
 
   <div id="matchContainer"></div>
   <a href="index.html">Retour à l'accueil</a>
 
   <script src="analyseur.js"></script>
-  <script src="recherche.js"></script>
 </body>
 </html>
