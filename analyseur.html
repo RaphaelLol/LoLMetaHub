@@ -49,14 +49,35 @@
   <h1>Analyseur de match</h1>
   <button id="importBtn">📁 Importer un match (.json)</button>
   <input type="file" id="importInput" accept=".json">
-  
+
+  <!-- 🔍 Bloc de recherche ajouté ici -->
+  <div id="search-bar" style="background:#1a1a1a; border-radius:10px; padding:15px; margin:20px auto; max-width:600px; text-align:left;">
+    <h2 style="color:#f5c518; margin-bottom:10px;">🔍 Rechercher un match</h2>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <input 
+        id="playerName" 
+        type="text" 
+        placeholder="Nom du joueur" 
+        style="flex:1; padding:10px; border-radius:6px; border:none; background:#333; color:white;"
+      />
+      <input 
+        id="championName" 
+        type="text" 
+        placeholder="Nom du champion" 
+        style="flex:1; padding:10px; border-radius:6px; border:none; background:#333; color:white;"
+      />
+      <button 
+        id="searchButton" 
+        style="background:#f5c518; border:none; padding:10px 20px; border-radius:8px; color:#000; font-weight:bold; cursor:pointer;"
+      >
+        Rechercher
+      </button>
+    </div>
+  </div>
+  <!-- 🟨 Fin du bloc ajouté -->
+
   <div id="matchContainer"></div>
   <a href="index.html">Retour à l'accueil</a>
-
-  <!-- ⚠️ IMPORTANT : Le script doit être à la fin du body -->
-  <script src="analyseur.js"></script>
-</body>
-</html>
 
   <script src="analyseur.js"></script>
 </body>
