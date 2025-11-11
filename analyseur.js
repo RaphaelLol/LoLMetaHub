@@ -7,7 +7,7 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
-// Crée un petit graphique KDA/CS/Gold
+// Crée un graphique KDA/CS/Gold
 function createStatsGraph(players, container) {
   const graphDiv = document.createElement('div');
   graphDiv.classList.add('statsGraph');
@@ -36,9 +36,9 @@ function analyseEquipe(players, matchDuration) {
 }
 
 // Affichage d’un match
-async function afficherMatch(matchData, champions, items, runes, append = true) {
+async function afficherMatch(matchData, champions, items, runes) {
   const container = document.getElementById('matchContainer');
-  if(!append) container.innerHTML = ''; // reset si nécessaire
+  container.innerHTML = ''; // toujours reset pour ne montrer qu'un match
 
   const duration = matchData.info.gameDuration;
   const durationMin = Math.floor(duration / 60);
@@ -53,9 +53,10 @@ async function afficherMatch(matchData, champions, items, runes, append = true) 
   const team200 = matchData.info.participants.filter(p => p.teamId === 200);
 
   const matchBlock = document.createElement('div');
-  matchBlock.classList.add('matchBlock');
+  matchBlock.classList.add('matchBlock'); // container pour bleu et rouge
+  container.appendChild(matchBlock);
 
-  // Équipe Bleu
+  // Équipe Bleue
   const teamBlueDiv = document.createElement('div');
   teamBlueDiv.classList.add('teamColumn', 'teamBlue');
   teamBlueDiv.innerHTML = `<h3>Équipe Bleue</h3>`;
@@ -70,6 +71,17 @@ async function afficherMatch(matchData, champions, items, runes, append = true) 
     `;
     teamBlueDiv.appendChild(playerDiv);
   });
+  createStatsGraph(team100, teamBlueDiv); // graphes KDA/CS/Gold
+
+  // Coach stats
+  const coachBlueDiv = document.createElement('div');
+  coachBlueDiv.classList.add('coachStats');
+  analyseEquipe(team100, duration).forEach(s => {
+    const p = document.createElement('p');
+    p.innerText = `${s.name} → KDA: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
+    coachBlueDiv.appendChild(p);
+  });
+  teamBlueDiv.appendChild(coachBlueDiv);
 
   // Équipe Rouge
   const teamRedDiv = document.createElement('div');
@@ -86,38 +98,19 @@ async function afficherMatch(matchData, champions, items, runes, append = true) 
     `;
     teamRedDiv.appendChild(playerDiv);
   });
-
-  // Graphes KDA/CS/Gold
-  createStatsGraph(team100, teamBlueDiv);
   createStatsGraph(team200, teamRedDiv);
 
-  // Stats pour coach
-  const coachBlueStats = analyseEquipe(team100, duration);
-  const coachRedStats = analyseEquipe(team200, duration);
-
-  const coachDivBlue = document.createElement('div');
-  coachDivBlue.classList.add('coachStats');
-  coachDivBlue.innerHTML = `<h4>Analyse coach</h4>`;
-  coachBlueStats.forEach(s => {
+  const coachRedDiv = document.createElement('div');
+  coachRedDiv.classList.add('coachStats');
+  analyseEquipe(team200, duration).forEach(s => {
     const p = document.createElement('p');
     p.innerText = `${s.name} → KDA: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
-    coachDivBlue.appendChild(p);
+    coachRedDiv.appendChild(p);
   });
-  teamBlueDiv.appendChild(coachDivBlue);
+  teamRedDiv.appendChild(coachRedDiv);
 
-  const coachDivRed = document.createElement('div');
-  coachDivRed.classList.add('coachStats');
-  coachRedStats.forEach(s => {
-    const p = document.createElement('p');
-    p.innerText = `${s.name} → KDA: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
-    coachDivRed.appendChild(p);
-  });
-  teamRedDiv.appendChild(coachDivRed);
-
-  // Ajout équipes collées
   matchBlock.appendChild(teamBlueDiv);
   matchBlock.appendChild(teamRedDiv);
-  container.appendChild(matchBlock);
 }
 
 // Initialisation
@@ -136,6 +129,7 @@ async function init() {
 
   let historyData = [];
 
+  // Import match simple
   importBtn.addEventListener('click', () => importInput.click());
   importInput.addEventListener('change', e => {
     const file = e.target.files[0];
@@ -144,7 +138,7 @@ async function init() {
     reader.onload = async ev => {
       try {
         const matchData = JSON.parse(ev.target.result);
-        await afficherMatch(matchData, champions, items, runes, true);
+        await afficherMatch(matchData, champions, items, runes);
       } catch (err) {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
@@ -152,6 +146,7 @@ async function init() {
     reader.readAsText(file);
   });
 
+  // Import historique (stockage mais **pas affichage automatique**)
   importHistoryBtn.addEventListener('click', () => importHistoryInput.click());
   importHistoryInput.addEventListener('change', e => {
     const file = e.target.files[0];
@@ -160,8 +155,7 @@ async function init() {
     reader.onload = async ev => {
       try {
         historyData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = "<p>Historique chargé.</p>";
-        historyData.forEach(match => afficherMatch(match, champions, items, runes, true));
+        matchContainer.innerHTML = "<p>Historique chargé. Faites une recherche pour voir les parties.</p>";
       } catch (err) {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
@@ -169,6 +163,7 @@ async function init() {
     reader.readAsText(file);
   });
 
+  // Recherche par champion
   searchBtn.addEventListener('click', () => {
     const champName = searchInput.value.trim().toLowerCase();
     if (!historyData.length) {
@@ -182,8 +177,9 @@ async function init() {
       matchContainer.innerHTML = "<p>Aucun match trouvé pour ce champion.</p>";
       return;
     }
+    // Affiche toutes les parties filtrées
     matchContainer.innerHTML = '';
-    filteredMatches.forEach(m => afficherMatch(m, champions, items, runes, true));
+    filteredMatches.forEach(m => afficherMatch(m, champions, items, runes));
   });
 }
 
