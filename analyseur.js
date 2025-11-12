@@ -4,150 +4,116 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
-// Graphique KDA / CS / Gold
-function createStatsGraph(players, container) {
-  const graphDiv = document.createElement('div');
-  graphDiv.classList.add('statsGraph');
-  players.forEach(player => {
-    const bar = document.createElement('div');
-    bar.classList.add('playerBar');
-    bar.innerHTML = `
-      <strong>${player.summonerName}</strong><br>
-      KDA: ${player.kills}/${player.deaths}/${player.assists}<br>
-      CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}<br>
-      Gold: ${player.goldEarned}
-    `;
-    graphDiv.appendChild(bar);
-  });
-  container.appendChild(graphDiv);
+function getItemImage(id) {
+  return id ? `https://ddragon.leagueoflegends.com/cdn/13.19.1/img/item/${id}.png` : "";
 }
 
-// Stats pour coach
-function analyseEquipe(players, matchDuration) {
-  return players.map(p => ({
-    name: p.summonerName || "Joueur",
-    kdaRatio: p.deaths === 0 ? p.kills + p.assists : (p.kills + p.assists)/p.deaths,
-    csPerMin: (p.totalMinionsKilled + p.neutralMinionsKilled) / (matchDuration/60),
-    goldPerMin: p.goldEarned / (matchDuration/60)
-  }));
+function getChampionImage(name) {
+  return `https://ddragon.leagueoflegends.com/cdn/13.19.1/img/champion/${name}.png`;
 }
 
-// Affiche un match
-async function afficherMatch(matchData, champions, items, runes) {
-  const container = document.getElementById('matchContainer');
-
-  // Bloc du match
-  const matchBlock = document.createElement('div');
-  matchBlock.classList.add('matchBlock');
-
-  const duration = matchData.info.gameDuration;
-  const durationMin = Math.floor(duration / 60);
-  const durationSec = duration % 60;
-
-  const header = document.createElement('div');
-  header.classList.add('matchHeader');
-  header.innerHTML = `
-    <h2>${matchData.info.gameMode} | Durée : ${durationMin}m ${durationSec}s</h2>
+function createDamageBar(player, maxDamage) {
+  const pct = Math.round((player.totalDamageDealtToChampions / maxDamage) * 100);
+  const color = player.teamId === 100 ? "#2e86de" : "#e74c3c";
+  return `
+    <div class="damageBar">
+      <div class="bar" style="width:${pct}%; background:${color}"></div>
+      <span>${player.totalDamageDealtToChampions.toLocaleString()}</span>
+    </div>
   `;
-  matchBlock.appendChild(header);
+}
 
-  // Séparer les équipes
+async function afficherMatch(matchData, champions, items, runes) {
+  const container = document.getElementById("matchContainer");
+  const matchCard = document.createElement("div");
+  matchCard.classList.add("matchCard");
+
+  const durationMin = Math.floor(matchData.info.gameDuration / 60);
+  const durationSec = matchData.info.gameDuration % 60;
+
+  const header = document.createElement("div");
+  header.classList.add("matchHeader");
+  header.innerHTML = `
+    <h2>${matchData.info.gameMode} • ${durationMin}m ${durationSec}s</h2>
+  `;
+  matchCard.appendChild(header);
+
   const team100 = matchData.info.participants.filter(p => p.teamId === 100);
   const team200 = matchData.info.participants.filter(p => p.teamId === 200);
+  const allPlayers = [...team100, ...team200];
+  const maxDamage = Math.max(...allPlayers.map(p => p.totalDamageDealtToChampions));
 
-  const teamsWrapper = document.createElement('div');
-  teamsWrapper.classList.add('teamsWrapper'); // display: flex; justify-content: center
-  matchBlock.appendChild(teamsWrapper);
+  const table = document.createElement("table");
+  table.classList.add("matchTable");
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Équipe</th>
+        <th>Joueur</th>
+        <th>KDA</th>
+        <th>Gold</th>
+        <th>CS</th>
+        <th>Wards</th>
+        <th>Dégâts</th>
+        <th>Objets</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
 
-  const teams = [
-    { data: team100, name: "Bleue", win: team100[0].win },
-    { data: team200, name: "Rouge", win: team200[0].win }
-  ];
+  const tbody = table.querySelector("tbody");
 
-  teams.forEach((team, idx) => {
-    const teamDiv = document.createElement('div');
-    teamDiv.classList.add('teamColumn');
-    teamDiv.classList.add(team.name === "Bleue" ? "teamBlue" : "teamRed");
+  allPlayers.forEach(player => {
+    const tr = document.createElement("tr");
+    tr.classList.add(player.teamId === 100 ? "blueTeam" : "redTeam");
 
-    teamDiv.innerHTML = `<h3>Équipe ${team.name} ${team.win ? "(Victoire)" : "(Défaite)"}</h3>`;
-
-    team.data.forEach(player => {
-      const playerDiv = document.createElement('div');
-      playerDiv.classList.add('playerCard');
-
-      // Items
-      const itemList = [];
-      for (let i = 0; i <= 6; i++) {
-        const id = player[`item${i}`];
-        if (id && items[id]) itemList.push({ name: items[id].name, img: items[id].image?.full });
+    const itemsHTML = [];
+    for (let i = 0; i <= 6; i++) {
+      const id = player[`item${i}`];
+      if (id) {
+        itemsHTML.push(`<img class="itemIcon" src="${getItemImage(id)}" alt="">`);
       }
+    }
 
-      // Runes
-      const runeList = [];
-      player.perks.styles.forEach(style => {
-        style.selections.forEach(s => {
-          const r = runes.find(rn => rn.id === s.perk);
-          if (r) runeList.push(r.name);
-        });
-      });
-
-      playerDiv.innerHTML = `
-        <h4>
-          <img src="http://ddragon.leagueoflegends.com/cdn/13.19.1/img/champion/${player.championName}.png" 
-               alt="${player.championName}" class="championImg">
-          ${player.summonerName} - ${player.championName}
-        </h4>
-        <p><strong>KDA :</strong> ${player.kills}/${player.deaths}/${player.assists}</p>
-        <p><strong>CS :</strong> ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
-        <p><strong>Gold :</strong> ${player.goldEarned}</p>
-        <p><strong>Objets :</strong><br>
-          ${itemList.map(it => `<div class="itemBox"><img src="https://ddragon.leagueoflegends.com/cdn/13.19.1/img/item/${it.img}" alt="${it.name}"><span>${it.name}</span></div>`).join('')}
-        </p>
-        <p><strong>Runes :</strong><br>${runeList.map(r => `<span class="runeBox">${r}</span>`).join('')}</p>
-      `;
-      teamDiv.appendChild(playerDiv);
-    });
-
-    // Graphiques
-    createStatsGraph(team.data, teamDiv);
-
-    // Analyse coach
-    const coachStats = analyseEquipe(team.data, duration);
-    const coachDiv = document.createElement('div');
-    coachDiv.classList.add('coachStats');
-    coachDiv.innerHTML = `<h4>Analyse pour coach :</h4>`;
-    coachStats.forEach(s => {
-      const p = document.createElement('p');
-      p.innerText = `${s.name} → KDA ratio: ${s.kdaRatio.toFixed(2)}, CS/min: ${s.csPerMin.toFixed(1)}, Gold/min: ${s.goldPerMin.toFixed(1)}`;
-      coachDiv.appendChild(p);
-    });
-    teamDiv.appendChild(coachDiv);
-
-    teamsWrapper.appendChild(teamDiv);
+    tr.innerHTML = `
+      <td class="teamLabel ${player.win ? "victory" : "defeat"}">
+        ${player.teamId === 100 ? "Bleue" : "Rouge"}
+      </td>
+      <td>
+        <img src="${getChampionImage(player.championName)}" class="champIcon">
+        <span class="playerName">${player.summonerName}</span>
+      </td>
+      <td>${player.kills}/${player.deaths}/${player.assists}</td>
+      <td>${player.goldEarned.toLocaleString()}</td>
+      <td>${player.totalMinionsKilled + player.neutralMinionsKilled}</td>
+      <td>${player.wardsPlaced}</td>
+      <td>${createDamageBar(player, maxDamage)}</td>
+      <td class="itemsCell">${itemsHTML.join("")}</td>
+    `;
+    tbody.appendChild(tr);
   });
 
-  container.appendChild(matchBlock);
+  matchCard.appendChild(table);
+  container.appendChild(matchCard);
 }
 
-// Initialisation
 async function init() {
-  const champions = await chargerJSON('champions.json');
-  const items = await chargerJSON('item.json').then(d => d.data);
-  const runes = await chargerJSON('runesReforged.json');
+  const champions = await chargerJSON("champions.json");
+  const items = await chargerJSON("item.json").then(d => d.data);
+  const runes = await chargerJSON("runesReforged.json");
 
-  const matchContainer = document.getElementById('matchContainer');
-  const importBtn = document.getElementById('importBtn');
-  const importInput = document.getElementById('importInput');
-  const importHistoryBtn = document.getElementById('importHistoryBtn');
-  const importHistoryInput = document.getElementById('importHistoryInput');
-  const searchInput = document.getElementById('championSearch');
-  const searchBtn = document.getElementById('searchBtn');
+  const matchContainer = document.getElementById("matchContainer");
+  const importBtn = document.getElementById("importBtn");
+  const importInput = document.getElementById("importInput");
+  const importHistoryBtn = document.getElementById("importHistoryBtn");
+  const importHistoryInput = document.getElementById("importHistoryInput");
+  const searchInput = document.getElementById("championSearch");
+  const searchBtn = document.getElementById("searchBtn");
 
   let historyData = [];
 
-  // Import match simple
-  importBtn.addEventListener('click', () => importInput.click());
-  importInput.addEventListener('change', e => {
+  importBtn.addEventListener("click", () => importInput.click());
+  importInput.addEventListener("change", e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -163,16 +129,15 @@ async function init() {
     reader.readAsText(file);
   });
 
-  // Import historique
-  importHistoryBtn.addEventListener('click', () => importHistoryInput.click());
-  importHistoryInput.addEventListener('change', e => {
+  importHistoryBtn.addEventListener("click", () => importHistoryInput.click());
+  importHistoryInput.addEventListener("change", e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
       try {
         historyData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = "<p>Historique chargé. Recherchez un champion pour afficher plusieurs parties.</p>";
+        matchContainer.innerHTML = "<p>Historique chargé. Recherchez un champion.</p>";
       } catch {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
@@ -180,8 +145,7 @@ async function init() {
     reader.readAsText(file);
   });
 
-  // Recherche par champion
-  searchBtn.addEventListener('click', () => {
+  searchBtn.addEventListener("click", () => {
     const champName = searchInput.value.trim().toLowerCase();
     if (!historyData.length) {
       matchContainer.innerHTML = "<p style='color:red;'>Aucun historique chargé !</p>";
