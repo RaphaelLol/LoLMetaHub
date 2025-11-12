@@ -1,161 +1,123 @@
-/* ==== Style global ==== */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #12141B;
-  color: #E0E0E0;
+  background: #0e0e0e;
+  color: #f5f5f5;
+  font-family: "Segoe UI", sans-serif;
+  text-align: center;
   margin: 0;
   padding: 20px;
 }
+
 h1 {
-  color: #F5C518;
-  text-align: center;
-  margin-bottom: 40px;
+  color: #f5c518;
+  margin-bottom: 20px;
 }
 
-/* ==== Conteneur des parties ==== */
-#matchContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
+.controls {
+  margin-bottom: 20px;
 }
 
-/* ==== Bloc d’une partie ==== */
-.matchBlock {
-  border: 1px solid #2C2F3A;
-  border-radius: 12px;
-  overflow: hidden;
-  background-color: #1E2028;
-  display: flex;
-  flex-direction: column;
+button {
+  background: #f5c518;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 5px;
+}
+button:hover { background: #ffd84d; }
+
+.searchBar input {
+  padding: 6px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  width: 180px;
+  background: #1c1c1c;
+  color: #fff;
+}
+.searchBar button {
+  background: #ffcf40;
+  margin-left: 6px;
 }
 
-/* ==== Header de la partie ==== */
-.matchHeader {
-  padding: 12px 20px;
-  background-color: #2C2F3A;
-  color: #F5C518;
-  font-size: 1.1em;
-  text-align: center;
-}
-
-/* ==== Wrapper équipes côte‑à‑côte ==== */
-.teamsWrapper {
-  display: flex;
-  width: 100%;
-}
-
-/* ==== Colonnes d’équipes ==== */
-.teamColumn {
-  flex: 1;
+.matchCard {
+  background: #1a1a1a;
+  border-radius: 10px;
   padding: 15px;
-  display: flex;
-  flex-direction: column;
+  margin: 20px auto;
+  max-width: 1000px;
+  box-shadow: 0 0 10px #000;
 }
 
-.teamBlue {
-  background-color: #162033;
-  border-right: 1px solid #2C2F3A;
-}
-.teamRed {
-  background-color: #330F11;
+.matchHeader {
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  color: #f5c518;
 }
 
-/* ==== Titre d’équipe ==== */
-.teamColumn h3 {
-  margin: 0 0 10px 0;
+.matchTable {
+  width: 100%;
+  border-collapse: collapse;
   text-align: center;
-  color: #F5C518;
-  font-size: 1.2em;
 }
 
-/* ==== Cartes joueurs ==== */
-.playerCard {
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  background-color: #262A35;
-  border: 1px solid #3A3F4C;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.playerCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-}
-.playerCard h4 {
-  margin: 0 0 8px 0;
-  color: #F5C518;
-  font-size: 1em;
-}
-.playerCard p {
-  margin: 4px 0;
-  font-size: 0.9em;
+.matchTable th {
+  background: #111;
+  color: #f5c518;
+  padding: 8px;
+  font-size: 14px;
+  border-bottom: 1px solid #333;
 }
 
-/* ==== Images champions ==== */
-.playerCard img.championImg {
+.matchTable td {
+  padding: 6px;
+  border-bottom: 1px solid #222;
+  vertical-align: middle;
+}
+
+.blueTeam { background: rgba(46, 134, 222, 0.15); }
+.redTeam { background: rgba(231, 76, 60, 0.15); }
+
+.teamLabel.victory { color: #00c46a; font-weight: bold; }
+.teamLabel.defeat { color: #ff5555; font-weight: bold; }
+
+.champIcon {
   width: 32px;
   height: 32px;
+  border-radius: 4px;
   vertical-align: middle;
-  margin-right: 8px;
+  margin-right: 5px;
 }
 
-/* ==== Items affichage ==== */
-.itemBox {
-  display: inline-block;
-  margin: 4px;
-  text-align: center;
-  color: #E0E0E0;
-}
-.itemBox img {
-  width: 40px;
-  height: 40px;
+.playerName { font-weight: bold; }
+
+.itemIcon {
+  width: 26px;
+  height: 26px;
   border-radius: 4px;
-  display: block;
-  margin: 0 auto 4px auto;
-}
-.itemBox span {
-  font-size: 0.75em;
-  display: block;
+  margin: 2px;
 }
 
-/* ==== Runes affichage ==== */
-.runeBox {
-  display: inline-block;
-  background-color: #3A3F4C;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin: 2px 2px 2px 0;
-  font-size: 0.75em;
-  color: #E0E0E0;
-}
-
-/* ==== Graphes KDA/CS/Gold ==== */
-.statsGraph {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 10px;
-}
-.playerBar {
-  padding: 8px;
-  background-color: #2C2F3A;
+.damageBar {
+  position: relative;
+  background: #222;
+  height: 14px;
   border-radius: 6px;
-  font-size: 0.9em;
-  color: #E0E0E0;
-}
-
-/* ==== Analyse coach ==== */
-.coachStats {
-  margin-top: 12px;
-  padding: 10px;
-  background-color: #1B1D25;
-  border-radius: 6px;
-  color: #F5C518;
-}
-.coachStats h4 {
-  margin: 0 0 8px 0;
-}
-.coachStats p {
+  overflow: hidden;
   margin: 2px 0;
-  font-size: 0.85em;
+}
+
+.damageBar .bar {
+  height: 100%;
+  border-radius: 6px;
+}
+
+.damageBar span {
+  position: absolute;
+  top: -18px;
+  right: 4px;
+  font-size: 11px;
+  color: #aaa;
 }
