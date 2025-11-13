@@ -1,6 +1,5 @@
-/* === BASE === */
 body {
-  background: #0d0d0d;
+  background: #0e0e0e;
   color: #f5f5f5;
   font-family: "Segoe UI", sans-serif;
   text-align: center;
@@ -10,80 +9,58 @@ body {
 
 h1 {
   color: #f5c518;
-  font-size: 2rem;
-  margin-bottom: 25px;
-  letter-spacing: 1px;
+  margin-bottom: 20px;
 }
 
-/* === CONTROLS === */
 .controls {
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 button {
   background: #f5c518;
   color: #000;
   border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
+  border-radius: 6px;
+  padding: 8px 14px;
   cursor: pointer;
   font-weight: bold;
   margin: 5px;
-  transition: all 0.2s ease;
 }
-
-button:hover {
-  background: #ffd84d;
-  transform: translateY(-1px);
-}
+button:hover { background: #ffd84d; }
 
 .searchBar input {
-  padding: 8px 10px;
+  padding: 6px;
   border: 1px solid #333;
-  border-radius: 6px;
-  width: 220px;
+  border-radius: 4px;
+  width: 180px;
   background: #1c1c1c;
   color: #fff;
-  transition: border 0.2s ease;
 }
-
-.searchBar input:focus {
-  outline: none;
-  border-color: #f5c518;
-}
-
 .searchBar button {
-  background: #f5c518;
-  margin-left: 8px;
-  padding: 8px 14px;
-  border-radius: 6px;
+  background: #ffcf40;
+  margin-left: 6px;
 }
 
 /* === MATCH CARD === */
 .matchCard {
   background: #1a1a1a;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 25px auto;
+  border-radius: 10px;
+  padding: 15px;
+  margin: 30px auto;
   max-width: 1000px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 10px #000;
 }
 
-.matchCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 0 20px rgba(245, 197, 24, 0.15);
+/* Espace entre les cartes */
+.matchCard + .matchCard {
+  margin-top: 40px;
 }
 
-/* === MATCH HEADER === */
 .matchHeader {
   border-bottom: 1px solid #333;
   padding-bottom: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   color: #f5c518;
-  font-weight: bold;
-  font-size: 1.1rem;
-  letter-spacing: 0.5px;
 }
 
 /* === TABLE === */
@@ -96,98 +73,75 @@ button:hover {
 .matchTable th {
   background: #111;
   color: #f5c518;
-  padding: 10px;
+  padding: 8px;
   font-size: 14px;
   border-bottom: 1px solid #333;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
 }
 
 .matchTable td {
   padding: 8px;
   border-bottom: 1px solid #222;
   vertical-align: middle;
-  font-size: 14px;
 }
 
-/* === TEAM COLORS === */
-.blueTeam {
-  background: rgba(46, 134, 222, 0.1);
-}
+.blueTeam { background: rgba(46, 134, 222, 0.15); }
+.redTeam { background: rgba(231, 76, 60, 0.15); }
 
-.redTeam {
-  background: rgba(231, 76, 60, 0.1);
-}
+.teamLabel.victory { color: #00c46a; font-weight: bold; }
+.teamLabel.defeat { color: #ff5555; font-weight: bold; }
 
-/* === TEAM LABEL === */
-.teamLabel.victory {
-  color: #00c46a;
-  font-weight: bold;
-}
-
-.teamLabel.defeat {
-  color: #ff5555;
-  font-weight: bold;
-}
-
-/* === ICONS === */
-.champIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  vertical-align: middle;
-  margin-right: 8px;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
-}
-
-.playerName {
-  font-weight: bold;
-  color: #fff;
-  vertical-align: middle;
-}
-
-.itemIcon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  margin: 3px;
-  background: #111;
-  padding: 2px;
-}
-
-/* === DAMAGE BAR === */
-.damageBar {
-  position: relative;
-  background: #222;
-  height: 16px;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 4px 0;
-}
-
-.damageBar .bar {
-  height: 100%;
-  border-radius: 8px;
-  transition: width 0.3s ease;
-}
-
-.damageBar span {
-  position: absolute;
-  top: -18px;
-  right: 4px;
-  font-size: 11px;
-  color: #aaa;
-}
-
-/* === PLAYER NAME NEXT TO ICON === */
-.playerContainer {
+/* === PLAYER === */
+.playerCell {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 8px;
 }
 
+.champIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
 
+.playerName {
+  font-weight: bold;
+  font-size: 13px;
+  color: #fff;
+  text-align: left;
+}
 
+/* === ITEMS === */
+.itemIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  margin: 2px;
+}
 
+/* === DAMAGE BAR === */
+.damageBar {
+  position: relative;
+  background: #222;
+  height: 14px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 4px 0;
+}
 
+.damageBar .bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.damageBar span {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #fff;
+  font-weight: bold;
+}
