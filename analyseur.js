@@ -61,32 +61,47 @@ async function afficherHistorique(filteredMatches) {
     return;
   }
 
-  const table = document.createElement("table");
-  table.classList.add("matchTable");
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th>Champion</th>
-        <th>KDA</th>
-        <th>Gold</th>
-        <th>CS</th>
-        <th>Wards</th>
-        <th>Dégâts</th>
-        <th>Objets</th>
-        <th>Durée</th>
-        <th>Résultat</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  `;
+  filteredMatches.forEach((match, index) => {
+    // Bloc contenant une partie
+    const matchBlock = document.createElement("div");
+    matchBlock.classList.add("matchBlock");
 
-  const tbody = table.querySelector("tbody");
+    // Titre Partie X
+    const header = document.createElement("h2");
+    header.textContent = `Partie ${index + 1}`;
+    header.classList.add("matchHeader");
+    matchBlock.appendChild(header);
 
-  filteredMatches.forEach(match => {
+    // Tableau
+    const table = document.createElement("table");
+    table.classList.add("matchTable");
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Champion</th>
+          <th>KDA</th>
+          <th>Gold</th>
+          <th>CS</th>
+          <th>Wards</th>
+          <th>Dégâts</th>
+          <th>Objets</th>
+          <th>Durée</th>
+          <th>Résultat</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    `;
+
+    const tbody = table.querySelector("tbody");
     const players = match.info.participants;
     const maxDamage = Math.max(...players.map(p => p.totalDamageDealtToChampions));
+
     players.forEach(player => {
       tbody.innerHTML += createMatchRow(match, player, maxDamage);
+    });
+
+    matchBlock.appendChild(table);
+    container.appendChild(matchBlock);
     });
   });
 
