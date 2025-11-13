@@ -62,17 +62,14 @@ async function afficherHistorique(filteredMatches) {
   }
 
   filteredMatches.forEach((match, index) => {
-    // Bloc contenant une partie
     const matchBlock = document.createElement("div");
     matchBlock.classList.add("matchBlock");
 
-    // Titre Partie X
     const header = document.createElement("h2");
     header.textContent = `Partie ${index + 1}`;
     header.classList.add("matchHeader");
     matchBlock.appendChild(header);
 
-    // Tableau
     const table = document.createElement("table");
     table.classList.add("matchTable");
     table.innerHTML = `
@@ -102,16 +99,18 @@ async function afficherHistorique(filteredMatches) {
 
     matchBlock.appendChild(table);
     container.appendChild(matchBlock);
-    });
   });
-
-  container.appendChild(table);
 }
 
 async function init() {
-  const champions = await chargerJSON("champions.json");
-  const items = await chargerJSON("item.json").then(d => d.data);
-  const runes = await chargerJSON("runesReforged.json");
+  // Chargement des assets (champions, items, runes)
+  try {
+    await chargerJSON("champions.json");
+    await chargerJSON("item.json");
+    await chargerJSON("runesReforged.json");
+  } catch (e) {
+    console.warn("Impossible de charger les assets locaux :", e);
+  }
 
   const matchContainer = document.getElementById("matchContainer");
   const importBtn = document.getElementById("importBtn");
@@ -123,6 +122,7 @@ async function init() {
 
   let historyData = [];
 
+  // Importer un match
   importBtn?.addEventListener("click", () => importInput.click());
   importInput?.addEventListener("change", e => {
     const file = e.target.files[0];
@@ -140,30 +140,29 @@ async function init() {
     reader.readAsText(file);
   });
 
+  // Importer un historique
   importHistoryBtn?.addEventListener("click", () => importHistoryInput.click());
   importHistoryInput?.addEventListener("change", e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const parsed = JSON.parse(ev.target.result);
-
-      // ✅ Ici parsed est déjà un tableau de matchs
-      if (Array.isArray(parsed)) {
-        historyData = parsed;
-      } else {
-        throw new Error("Format JSON inattendu : attendu un tableau");
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        if (Array.isArray(parsed)) {
+          historyData = parsed;
+        } else {
+          throw new Error("Format JSON inattendu : attendu un tableau");
+        }
+        matchContainer.innerHTML = "<p>✅ Historique chargé. Recherchez un champion ci-dessus.</p>";
+      } catch {
+        matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
-
-      matchContainer.innerHTML = "<p>✅ Historique chargé. Recherchez un champion ci-dessus.</p>";
-    } catch {
-      matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
-    }
-  };
-  reader.readAsText(file);
+    };
+    reader.readAsText(file);
   });
 
+  // Recherche par champion
   searchBtn?.addEventListener("click", () => {
     const champName = searchInput.value.trim().toLowerCase();
     if (!historyData.length) {
