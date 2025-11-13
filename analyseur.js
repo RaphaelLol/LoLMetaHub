@@ -142,18 +142,26 @@ async function init() {
 
   importHistoryBtn?.addEventListener("click", () => importHistoryInput.click());
   importHistoryInput?.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        historyData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = "<p>✅ Historique chargé. Recherchez un champion ci-dessus.</p>";
-      } catch {
-        matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+
+      // ✅ Ici parsed est déjà un tableau de matchs
+      if (Array.isArray(parsed)) {
+        historyData = parsed;
+      } else {
+        throw new Error("Format JSON inattendu : attendu un tableau");
       }
-    };
-    reader.readAsText(file);
+
+      matchContainer.innerHTML = "<p>✅ Historique chargé. Recherchez un champion ci-dessus.</p>";
+    } catch {
+      matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
+    }
+  };
+  reader.readAsText(file);
   });
 
   searchBtn?.addEventListener("click", () => {
