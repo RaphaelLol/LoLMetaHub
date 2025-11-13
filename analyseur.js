@@ -5,83 +5,40 @@ async function chargerJSON(url) {
 }
 
 function getItemImage(id) {
-  return id ? `https://ddragon.leagueoflegends.com/cdn/13.19.1/img/item/${id}.png` : "";
+  return id ? `https://ddragon.leagueoflegends.com/cdn/14.3.1/img/item/${id}.png` : "";
 }
 
 function getChampionImage(name) {
-  return `https://ddragon.leagueoflegends.com/cdn/13.19.1/img/champion/${name}.png`;
+  return `https://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${name}.png`;
 }
 
 function createDamageBar(player, maxDamage) {
   const pct = Math.round((player.totalDamageDealtToChampions / maxDamage) * 100);
-  const color = player.teamId === 100 ? "#2e86de" : "#e74c3c";
+  const color = player.teamId === 100 ? "#3498db" : "#e74c3c";
   return `
-    <div class="damageBar">
-      <div class="bar" style="width:${pct}%; background:${color}"></div>
-      <span>${player.totalDamageDealtToChampions.toLocaleString()}</span>
+    <div class="damageBar" style="display:flex;align-items:center;gap:6px;">
+      <div class="bar" style="width:${pct}%; height:8px; background:${color}; border-radius:4px;"></div>
+      <span style="font-size:12px;">${player.totalDamageDealtToChampions.toLocaleString()}</span>
     </div>
   `;
 }
 
-async function afficherMatch(matchData, champions, items, runes) {
-  const container = document.getElementById("matchContainer");
-  const matchCard = document.createElement("div");
-  matchCard.classList.add("matchCard");
+function createMatchRow(match, player, maxDamage) {
+  const itemsHTML = [];
+  for (let i = 0; i <= 6; i++) {
+    const id = player[`item${i}`];
+    if (id) itemsHTML.push(`<img class="itemIcon" src="${getItemImage(id)}" alt="">`);
+  }
 
-  const durationMin = Math.floor(matchData.info.gameDuration / 60);
-  const durationSec = matchData.info.gameDuration % 60;
+  const durationMin = Math.floor(match.info.gameDuration / 60);
 
-  const header = document.createElement("div");
-  header.classList.add("matchHeader");
-  header.innerHTML = `
-    <h2>${matchData.info.gameMode} • ${durationMin}m ${durationSec}s</h2>
-  `;
-  matchCard.appendChild(header);
-
-  const team100 = matchData.info.participants.filter(p => p.teamId === 100);
-  const team200 = matchData.info.participants.filter(p => p.teamId === 200);
-  const allPlayers = [...team100, ...team200];
-  const maxDamage = Math.max(...allPlayers.map(p => p.totalDamageDealtToChampions));
-
-  const table = document.createElement("table");
-  table.classList.add("matchTable");
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th>Équipe</th>
-        <th>Joueur</th>
-        <th>KDA</th>
-        <th>Gold</th>
-        <th>CS</th>
-        <th>Wards</th>
-        <th>Dégâts</th>
-        <th>Objets</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  `;
-
-  const tbody = table.querySelector("tbody");
-
-  allPlayers.forEach(player => {
-    const tr = document.createElement("tr");
-    tr.classList.add(player.teamId === 100 ? "blueTeam" : "redTeam");
-
-    const itemsHTML = [];
-    for (let i = 0; i <= 6; i++) {
-      const id = player[`item${i}`];
-      if (id) {
-        itemsHTML.push(`<img class="itemIcon" src="${getItemImage(id)}" alt="">`);
-      }
-    }
-
-    tr.innerHTML = `
-      <td class="teamLabel ${player.win ? "victory" : "defeat"}">
-        ${player.teamId === 100 ? "Bleue" : "Rouge"}
-      </td>
+  return `
+    <tr class="${player.win ? "victoryRow" : "defeatRow"}">
       <td>
-        <img src="${getChampionImage(player.championName)}" class="champIcon">
-        <span class="playerName">${player.summonerName}</span>
+        <div class="championCell">
+          <img src="${getChampionImage(player.championName)}" class="champIcon">
+          <span class="playerName">${player.summonerName}</span>
+        </div>
       </td>
       <td>${player.kills}/${player.deaths}/${player.assists}</td>
       <td>${player.goldEarned.toLocaleString()}</td>
@@ -89,12 +46,51 @@ async function afficherMatch(matchData, champions, items, runes) {
       <td>${player.wardsPlaced}</td>
       <td>${createDamageBar(player, maxDamage)}</td>
       <td class="itemsCell">${itemsHTML.join("")}</td>
-    `;
-    tbody.appendChild(tr);
+      <td>${durationMin}m</td>
+      <td class="${player.win ? "victory" : "defeat"}">${player.win ? "Victoire" : "Défaite"}</td>
+    </tr>
+  `;
+}
+
+async function afficherHistorique(filteredMatches) {
+  const container = document.getElementById("matchContainer");
+  container.innerHTML = "";
+
+  if (!filteredMatches.length) {
+    container.innerHTML = "<p>Aucun match trouvé.</p>";
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.classList.add("matchTable");
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th>Champion</th>
+        <th>KDA</th>
+        <th>Gold</th>
+        <th>CS</th>
+        <th>Wards</th>
+        <th>Dégâts</th>
+        <th>Objets</th>
+        <th>Durée</th>
+        <th>Résultat</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+
+  const tbody = table.querySelector("tbody");
+
+  filteredMatches.forEach(match => {
+    const players = match.info.participants;
+    const maxDamage = Math.max(...players.map(p => p.totalDamageDealtToChampions));
+    players.forEach(player => {
+      tbody.innerHTML += createMatchRow(match, player, maxDamage);
+    });
   });
 
-  matchCard.appendChild(table);
-  container.appendChild(matchCard);
+  container.appendChild(table);
 }
 
 async function init() {
@@ -112,8 +108,8 @@ async function init() {
 
   let historyData = [];
 
-  importBtn.addEventListener("click", () => importInput.click());
-  importInput.addEventListener("change", e => {
+  importBtn?.addEventListener("click", () => importInput.click());
+  importInput?.addEventListener("change", e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -121,7 +117,7 @@ async function init() {
       try {
         const matchData = JSON.parse(ev.target.result);
         matchContainer.innerHTML = "";
-        await afficherMatch(matchData, champions, items, runes);
+        await afficherHistorique([matchData]);
       } catch {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
@@ -129,15 +125,15 @@ async function init() {
     reader.readAsText(file);
   });
 
-  importHistoryBtn.addEventListener("click", () => importHistoryInput.click());
-  importHistoryInput.addEventListener("change", e => {
+  importHistoryBtn?.addEventListener("click", () => importHistoryInput.click());
+  importHistoryInput?.addEventListener("change", e => {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = ev => {
       try {
         historyData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = "<p>Historique chargé. Recherchez un champion.</p>";
+        matchContainer.innerHTML = "<p>✅ Historique chargé. Recherchez un champion ci-dessus.</p>";
       } catch {
         matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
       }
@@ -145,10 +141,10 @@ async function init() {
     reader.readAsText(file);
   });
 
-  searchBtn.addEventListener("click", () => {
+  searchBtn?.addEventListener("click", () => {
     const champName = searchInput.value.trim().toLowerCase();
     if (!historyData.length) {
-      matchContainer.innerHTML = "<p style='color:red;'>Aucun historique chargé !</p>";
+      matchContainer.innerHTML = "<p style='color:red;'>⚠️ Aucun historique chargé !</p>";
       return;
     }
 
@@ -156,13 +152,7 @@ async function init() {
       m.info.participants.some(p => (p.championName || "").toLowerCase() === champName)
     );
 
-    if (!filteredMatches.length) {
-      matchContainer.innerHTML = "<p>Aucun match trouvé pour ce champion.</p>";
-      return;
-    }
-
-    matchContainer.innerHTML = "";
-    filteredMatches.forEach(m => afficherMatch(m, champions, items, runes));
+    afficherHistorique(filteredMatches);
   });
 }
 
