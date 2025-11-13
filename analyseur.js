@@ -35,7 +35,7 @@ function createMatchRow(match, player, maxDamage) {
   return `
     <tr class="${player.win ? "victoryRow" : "defeatRow"}">
       <td>
-        <div class="championCell">
+        <div class="playerCell">
           <img src="${getChampionImage(player.championName)}" class="champIcon">
           <span class="playerName">${player.summonerName}</span>
         </div>
