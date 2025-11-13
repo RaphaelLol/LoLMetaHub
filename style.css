@@ -1,5 +1,6 @@
+/* === BASE === */
 body {
-  background: #0e0e0e;
+  background: #0d0d0d;
   color: #f5f5f5;
   font-family: "Segoe UI", sans-serif;
   text-align: center;
@@ -9,54 +10,83 @@ body {
 
 h1 {
   color: #f5c518;
-  margin-bottom: 20px;
+  font-size: 2rem;
+  margin-bottom: 25px;
+  letter-spacing: 1px;
 }
 
+/* === CONTROLS === */
 .controls {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 button {
   background: #f5c518;
   color: #000;
   border: none;
-  border-radius: 6px;
-  padding: 8px 14px;
+  border-radius: 8px;
+  padding: 10px 18px;
   cursor: pointer;
   font-weight: bold;
   margin: 5px;
+  transition: all 0.2s ease;
 }
-button:hover { background: #ffd84d; }
+
+button:hover {
+  background: #ffd84d;
+  transform: translateY(-1px);
+}
 
 .searchBar input {
-  padding: 6px;
+  padding: 8px 10px;
   border: 1px solid #333;
-  border-radius: 4px;
-  width: 180px;
+  border-radius: 6px;
+  width: 220px;
   background: #1c1c1c;
   color: #fff;
-}
-.searchBar button {
-  background: #ffcf40;
-  margin-left: 6px;
+  transition: border 0.2s ease;
 }
 
+.searchBar input:focus {
+  outline: none;
+  border-color: #f5c518;
+}
+
+.searchBar button {
+  background: #f5c518;
+  margin-left: 8px;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+/* === MATCH CARD === */
 .matchCard {
   background: #1a1a1a;
-  border-radius: 10px;
-  padding: 15px;
-  margin: 20px auto;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 25px auto;
   max-width: 1000px;
-  box-shadow: 0 0 10px #000;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
+.matchCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(245, 197, 24, 0.15);
+}
+
+/* === MATCH HEADER === */
 .matchHeader {
   border-bottom: 1px solid #333;
   padding-bottom: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   color: #f5c518;
+  font-weight: bold;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
 }
 
+/* === TABLE === */
 .matchTable {
   width: 100%;
   border-collapse: collapse;
@@ -66,52 +96,79 @@ button:hover { background: #ffd84d; }
 .matchTable th {
   background: #111;
   color: #f5c518;
-  padding: 8px;
+  padding: 10px;
   font-size: 14px;
   border-bottom: 1px solid #333;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .matchTable td {
-  padding: 6px;
+  padding: 8px;
   border-bottom: 1px solid #222;
   vertical-align: middle;
+  font-size: 14px;
 }
 
-.blueTeam { background: rgba(46, 134, 222, 0.15); }
-.redTeam { background: rgba(231, 76, 60, 0.15); }
+/* === TEAM COLORS === */
+.blueTeam {
+  background: rgba(46, 134, 222, 0.1);
+}
 
-.teamLabel.victory { color: #00c46a; font-weight: bold; }
-.teamLabel.defeat { color: #ff5555; font-weight: bold; }
+.redTeam {
+  background: rgba(231, 76, 60, 0.1);
+}
 
+/* === TEAM LABEL === */
+.teamLabel.victory {
+  color: #00c46a;
+  font-weight: bold;
+}
+
+.teamLabel.defeat {
+  color: #ff5555;
+  font-weight: bold;
+}
+
+/* === ICONS === */
 .champIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   vertical-align: middle;
-  margin-right: 5px;
+  margin-right: 8px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
-.playerName { font-weight: bold; }
+.playerName {
+  font-weight: bold;
+  color: #fff;
+  vertical-align: middle;
+}
 
 .itemIcon {
-  width: 26px;
-  height: 26px;
-  border-radius: 4px;
-  margin: 2px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  margin: 3px;
+  background: #111;
+  padding: 2px;
 }
 
+/* === DAMAGE BAR === */
 .damageBar {
   position: relative;
   background: #222;
-  height: 14px;
-  border-radius: 6px;
+  height: 16px;
+  border-radius: 8px;
   overflow: hidden;
-  margin: 2px 0;
+  margin: 4px 0;
 }
 
 .damageBar .bar {
   height: 100%;
-  border-radius: 6px;
+  border-radius: 8px;
+  transition: width 0.3s ease;
 }
 
 .damageBar span {
@@ -121,3 +178,16 @@ button:hover { background: #ffd84d; }
   font-size: 11px;
   color: #aaa;
 }
+
+/* === PLAYER NAME NEXT TO ICON === */
+.playerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+
+
+
+
