@@ -62,6 +62,8 @@ function createMatchRow(match, player, maxDamage) {
     : (player.summonerName || "Inconnu");
 
   const durationMin = Math.floor(match.info.gameDuration / 60);
+  console.log("Runes HTML:", runesHTML);
+
 
   return `
     <tr class="${player.win ? "victoryRow" : "defeatRow"}">
