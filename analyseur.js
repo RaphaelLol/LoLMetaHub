@@ -13,6 +13,7 @@ function getSummonerSpellImage(filename) {
   return filename ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}` : "";
 }
 
+
 function getItemImage(id) {
   return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png` : "";
 }
@@ -125,9 +126,9 @@ function renderPlayerCell(p) {
   const spell1Name = Object.keys(SUMMONER_SPELLS).includes(String(spell1Id)) ? SUMMONER_SPELLS[spell1Id].replace("Summoner", "").replace(".png", "") : "Sort inconnu";
   const spell2Name = Object.keys(SUMMONER_SPELLS).includes(String(spell2Id)) ? SUMMONER_SPELLS[spell2Id].replace("Summoner", "").replace(".png", "") : "Sort inconnu";
 
-  const spell1 = getSummonerSpellImage(SUMMONER_SPELLS[spell1Id]);
-  const spell2 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner2Id]);
-
+  const spell1 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner1Id]);
+const spell2 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner2Id]);
+  
   return `
     <div class="playerCell">
       <img src="${champImg}" class="champIcon" alt="${p.championName}">
