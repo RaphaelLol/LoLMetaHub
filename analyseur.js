@@ -10,7 +10,10 @@ async function chargerJSON(url) {
 }
 
 function getSummonerSpellImage(filename) {
-  return filename ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}` : "";
+  if (!filename) return "";
+  const urlV = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}`;
+  const urlNV = `https://ddragon.leagueoflegends.com/cdn/img/spell/${filename}`;
+  return urlV + `" onerror="this.onerror=null;this.src='${urlNV}'`;
 }
 
 
@@ -99,7 +102,7 @@ const SUMMONER_SPELLS = {
   11: "SummonerSmite.png",
   12: "SummonerTeleport.png",
   13: "SummonerMana.png",       // Clarity
-  14: "SummonerIgnite.png",
+  14: "SummonerIgnite.png",     // Ignite
   21: "SummonerBarrier.png",
 };
 
@@ -128,6 +131,7 @@ function renderPlayerCell(p) {
 
   const spell1 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner1Id]);
 const spell2 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner2Id]);
+
   
   return `
     <div class="playerCell">
