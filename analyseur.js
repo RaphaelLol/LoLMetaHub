@@ -8,6 +8,11 @@ function getItemImage(id) {
   return id ? `https://ddragon.leagueoflegends.com/cdn/14.3.1/img/item/${id}.png` : "";
 }
 
+function getRuneImage(id) {
+  return `https://ddragon.leagueoflegends.com/cdn/15.22.1/img/perk/${id}.png`;
+}
+
+
 function getChampionImage(name) {
   return `https://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${name}.png`;
 }
@@ -32,14 +37,14 @@ function createMatchRow(match, player, maxDamage) {
 
   // Runes
   let runesHTML = "";
-  if (player.perks?.styles) {
-    runesHTML = player.perks.styles
-      .map(style =>
-        style.selections
-          .map(sel => `<img class="runeIcon" src="https://ddragon.leagueoflegends.com/cdn/img/perk/${sel.perk}.png" alt="">`)
-          .join("")
-      )
-      .join(" ");
+ if (player.perks?.styles) {
+  runesHTML = player.perks.styles
+    .map(style =>
+      style.selections
+        .map(sel => `<img class="runeIcon" src="${getRuneImage(sel.perk)}" alt="">`)
+        .join("")
+    )
+    .join(" ");
   }
 
   // Pseudo Riot (si dispo)
