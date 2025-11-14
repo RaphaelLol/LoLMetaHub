@@ -100,8 +100,9 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  justify-content: center;
   margin-top: 4px;
+  justify-content: center;
+  padding: 2px;
 }
 
 .runeIcon {
@@ -109,6 +110,7 @@ button:hover {
   height: 22px;
   object-fit: contain;
   border-radius: 3px;
+  background-color: #000;
 }
 
 /* === ITEMS === */
@@ -166,3 +168,4 @@ footer a {
 footer a:hover {
   text-decoration: underline;
 }
+
