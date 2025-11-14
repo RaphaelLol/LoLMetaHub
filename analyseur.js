@@ -9,6 +9,10 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
+function getSummonerSpellImage(id) {
+  return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${id}.png` : "";
+}
+
 function getItemImage(id) {
   return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png` : "";
 }
@@ -85,6 +89,20 @@ function normalizeRole(pos) {
   return ""; // inconnu
 }
 
+const SUMMONER_SPELLS = {
+  1: "SummonerBoost.png",       // Cleanse
+  3: "SummonerExhaust.png",
+  4: "SummonerFlash.png",
+  6: "SummonerHaste.png",       // Ghost
+  7: "SummonerHeal.png",
+  11: "SummonerSmite.png",
+  12: "SummonerTeleport.png",
+  13: "SummonerMana.png",       // Clarity
+  14: "SummonerIgnite.png",
+  21: "SummonerBarrier.png",
+};
+
+
 // ====== DAMAGE BAR (par joueur) ======
 function createDamageBar(player, maxDamage, color) {
   const pct = maxDamage ? Math.round((player.totalDamageDealtToChampions / maxDamage) * 100) : 0;
@@ -101,9 +119,17 @@ function renderPlayerCell(p) {
   const name = playerDisplayName(p);
   const champImg = getChampionImage(p.championName);
   const runes = renderRunes(p.perks);
+
+  const spell1 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner1Id]);
+  const spell2 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner2Id]);
+
   return `
     <div class="playerCell">
       <img src="${champImg}" class="champIcon" alt="${p.championName}">
+      <div class="spellsCell">
+        <img src="${spell1}" class="spellIcon" alt="">
+        <img src="${spell2}" class="spellIcon" alt="">
+      </div>
       <span class="playerName">${name}</span>
       ${runes}
     </div>
