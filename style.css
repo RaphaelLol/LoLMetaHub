@@ -195,3 +195,18 @@ footer a:hover {
   text-decoration: underline;
 }
 
+.spellsCell {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.spellIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  object-fit: contain;
+}
+
+
+
