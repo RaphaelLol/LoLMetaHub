@@ -11,13 +11,13 @@ async function chargerJSON(url) {
 
 function getSummonerSpellImage(filename) {
   if (!filename) return "";
-  
- // 🔥 Cas spécial pour Ignite → dossier local
+
+  // 🔥 Cas spécial pour Ignite → lien absolu GitHub Pages
   if (filename === "SummonerIgnite.png") {
-    return `/static/img/spell/${filename}`;
+    return `https://raphaellol.github.io/LoLMetaHub/static/img/spell/${filename}`;
   }
 
- // 🌐 Tous les autres passent par Riot CDN
+  // 🌐 Tous les autres → Riot CDN
   return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}`;
 }
 
