@@ -147,15 +147,20 @@ button:hover { background: #ffd84d; }
 
 .runesCell {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
   margin-top: 4px;
-  border: 1px solid red; /* 👈 test visuel */
+  padding: 2px;
+  background: #222; /* test visuel temporaire */
+  border-radius: 4px;
 }
 
 .runeIcon {
-  width: 20px;
-  height: 20px;
-  background: yellow; /* 👈 test visuel */
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  border: 1px solid #444; /* test visuel temporaire */
+  background: #000; /* test visuel temporaire */
 }
 
 
