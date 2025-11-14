@@ -108,6 +108,20 @@ const SUMMONER_SPELLS = {
   21: "SummonerBarrier.png",
 };
 
+const SUMMONER_SPELL_DESCRIPTIONS = {
+  "SummonerBoost.png": "Supprime tous les effets de contrôle et réduit les effets futurs pendant quelques secondes.",
+  "SummonerExhaust.png": "Réduit la vitesse de déplacement et les dégâts infligés par la cible.",
+  "SummonerFlash.png": "Téléporte votre champion sur une courte distance.",
+  "SummonerHaste.png": "Augmente fortement la vitesse de déplacement pendant un court instant.",
+  "SummonerHeal.png": "Soigne votre champion et un allié proche, tout en augmentant la vitesse de déplacement.",
+  "SummonerSmite.png": "Inflige des dégâts aux monstres et sbires. Nécessaire pour la jungle.",
+  "SummonerTeleport.png": "Téléporte votre champion vers une tourelle, un sbire ou un allié.",
+  "SummonerMana.png": "Restaure du mana à votre champion et aux alliés proches.",
+  "SummonerIgnite.png": "Inflige des dégâts sur la durée et réduit les soins reçus par la cible.",
+  "SummonerBarrier.png": "Crée un bouclier temporaire qui absorbe les dégâts.",
+};
+
+
 // ====== DAMAGE BAR (par joueur) ======
 function createDamageBar(player, maxDamage, color) {
   const pct = maxDamage ? Math.round((player.totalDamageDealtToChampions / maxDamage) * 100) : 0;
@@ -135,13 +149,18 @@ function renderPlayerCell(p) {
   const spell1Name = spell1File ? spell1File.replace("Summoner","").replace(".png","") : "Sort inconnu";
   const spell2Name = spell2File ? spell2File.replace("Summoner","").replace(".png","") : "Sort inconnu";
 
+  const spell1Desc = SUMMONER_SPELL_DESCRIPTIONS[spell1File] || spell1Name;
+  const spell2Desc = SUMMONER_SPELL_DESCRIPTIONS[spell2File] || spell2Name;
+
+
   return `
     <div class="playerCell">
       <img src="${champImg}" class="champIcon" alt="${p.championName}">
       <div class="spellsCell">
         <span class="label">Sorts :</span>
-        <img src="${spell1URL}" class="spellIcon" alt="${spell1Name}" title="${spell1Name}">
-        <img src="${spell2URL}" class="spellIcon" alt="${spell2Name}" title="${spell2Name}">
+        <img src="${spell1URL}" class="spellIcon" alt="${spell1Name}" title="${spell1Desc}">
+        <img src="${spell2URL}" class="spellIcon" alt="${spell2Name}" title="${spell2Desc}">
+
       </div>
       <span class="playerName">${name}</span>
       ${runes}
@@ -322,6 +341,8 @@ async function init() {
     };
     reader.readAsText(file);
   });
+
+  
 
   // Import de l'historique (plusieurs parties)
   importHistoryBtn?.addEventListener("click", () => importHistoryInput.click());
