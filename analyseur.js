@@ -11,13 +11,13 @@ async function chargerJSON(url) {
 
 function getSummonerSpellImage(filename) {
   if (!filename) return "";
-
-  // 🔥 Cas spécial pour Ignite
+  
+ // 🔥 Cas spécial pour Ignite → dossier local
   if (filename === "SummonerIgnite.png") {
     return `/static/img/spell/${filename}`;
   }
 
-  // 🌐 Tous les autres passent par Riot CDN
+ // 🌐 Tous les autres passent par Riot CDN
   return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}`;
 }
 
@@ -33,11 +33,9 @@ function getChampionImage(name) {
 function getRuneImageById(id) {
   const iconPath = RUNE_ICON_MAP[id];
   if (!iconPath) return "";
-  // Si le chemin contient déjà "perk-images", on le garde
   if (iconPath.includes("perk-images/")) {
     return `https://ddragon.leagueoflegends.com/cdn/img/${iconPath}`;
   }
-  // Sinon, on ignore cette rune (évite les chemins invalides)
   return "";
 }
 // ====== FORMATTING ======
@@ -65,8 +63,8 @@ function renderRunes(perks) {
       style.selections
         .map(sel => {
           const url = getRuneImageById(sel.perk);
-          if (!url) return ""; // ignore les runes sans image valide
-          return url ? `<img class="runeIcon" src="${url}" alt="">` : "";
+          if (!url) return "";
+          return `<img class="runeIcon" src="${url}" alt="">`;
         })
         .join("")
     )
@@ -89,28 +87,26 @@ const ROLE_ORDER = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"];
 function normalizeRole(pos) {
   const v = (pos || "").toUpperCase();
   if (ROLE_ORDER.includes(v)) return v;
-  // Fallbacks possibles si "teamPosition" est vide
   if (v.includes("TOP")) return "TOP";
   if (v.includes("JUNG")) return "JUNGLE";
   if (v.includes("MID") || v.includes("MIDDLE")) return "MIDDLE";
   if (v.includes("ADC") || v.includes("BOTTOM") || v.includes("BOT")) return "BOTTOM";
   if (v.includes("SUPPORT") || v.includes("UTIL")) return "UTILITY";
-  return ""; // inconnu
+  return "";
 }
 
 const SUMMONER_SPELLS = {
-  1: "SummonerBoost.png",       // Cleanse
+  1: "SummonerBoost.png",
   3: "SummonerExhaust.png",
   4: "SummonerFlash.png",
-  6: "SummonerHaste.png",       // Ghost
+  6: "SummonerHaste.png",
   7: "SummonerHeal.png",
   11: "SummonerSmite.png",
   12: "SummonerTeleport.png",
-  13: "SummonerMana.png",       // Clarity
-  14: "SummonerIgnite.png",     // Ignite
+  13: "SummonerMana.png",
+  14: "SummonerIgnite.png", // Ignite → cas spécial
   21: "SummonerBarrier.png",
 };
-
 
 // ====== DAMAGE BAR (par joueur) ======
 function createDamageBar(player, maxDamage, color) {
