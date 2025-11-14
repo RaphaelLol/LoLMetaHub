@@ -43,14 +43,15 @@ function createMatchRow(match, player, maxDamage) {
   // Runes
   let runesHTML = "";
   if (player.perks?.styles) {
-    runesHTML = player.perks.styles
-      .map(style =>
-        style.selections
-          .map(sel => {
-            const url = getRuneImageById(sel.perk);
-            return url ? `<img class="runeIcon" src="${url}" alt="">` : "";
-          })
-          .join("")
+  runesHTML = player.perks.styles
+    .map(style =>
+      style.selections
+        .map(sel => {
+          const url = getRuneImageById(sel.perk);
+          console.log("Rune ID:", sel.perk, "→ URL:", url); // 👈 AJOUT ICI
+          return url ? `<img class="runeIcon" src="${url}" alt="">` : "";
+        })
+        .join("")
       )
       .join(" ");
   }
