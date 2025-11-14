@@ -178,15 +178,23 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg) {
   const rightCell = rightP ? renderPlayerCell(rightP) : "<div class='playerCell'>—</div>";
 
   const leftStats = leftP
-    ? `
-      <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
-      <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
-      <div><strong>CS:</strong> ${formatCS(leftP)}</div>
-      <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
-      ${createDamageBar(leftP, leftMaxDmg, leftColor)}
-      ${renderItems(leftP)}
-    `
-    : "<div>—</div>";
+  ? `
+    <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
+    <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
+    <div><strong>CS:</strong> ${formatCS(leftP)}</div>
+    <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
+
+    <!-- 🔥 Stats avancées -->
+    <div><strong>DPM:</strong> ${(leftP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
+    <div><strong>KP:</strong> ${(((leftP.kills + leftP.assists) / teamTotalKillsBlue) * 100).toFixed(1)}%</div>
+    <div><strong>Vision/min:</strong> ${(leftP.visionScore / (match.info.gameDuration/60)).toFixed(2)}</div>
+    <div><strong>Gold→Damage:</strong> ${(leftP.totalDamageDealtToChampions / leftP.goldEarned).toFixed(2)}</div>
+
+    ${createDamageBar(leftP, leftMaxDmg, leftColor)}
+    ${renderItems(leftP)}
+  `
+  : "<div>—</div>";
+
 
   const rightStats = rightP
     ? `
@@ -219,6 +227,14 @@ function renderMatchFaceAFace(match) {
   // max damage par équipe pour échelle des barres
   const leftMax = Math.max(...blue.map(p => p.totalDamageDealtToChampions), 0);
   const rightMax = Math.max(...red.map(p => p.totalDamageDealtToChampions), 0);
+
+  // 👉 C’est ici que tu ajoutes le calcul des kills totaux
+  const teamTotalKillsBlue = blue.reduce((sum, p) => sum + p.kills, 0);
+  const teamTotalKillsRed = red.reduce((sum, p) => sum + p.kills, 0);
+
+  <div><strong>KP:</strong> ${(((leftP.kills + leftP.assists) / teamTotalKillsBlue) * 100).toFixed(1)}%</div>
+  <div><strong>KP:</strong> ${(((rightP.kills + rightP.assists) / teamTotalKillsRed) * 100).toFixed(1)}%</div>
+
 
   // Map rôle -> joueur
   const blueByRole = {};
