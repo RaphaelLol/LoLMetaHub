@@ -126,7 +126,7 @@ function renderPlayerCell(p) {
   const spell2Name = Object.keys(SUMMONER_SPELLS).includes(String(spell2Id)) ? SUMMONER_SPELLS[spell2Id].replace("Summoner", "").replace(".png", "") : "Sort inconnu";
 
   const spell1 = getSummonerSpellImage(SUMMONER_SPELLS[spell1Id]);
-  const spell2 = getSummonerSpellImage(SUMMONER_SPELLS[spell2Id]);
+  const spell2 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner2Id]);
 
   return `
     <div class="playerCell">
