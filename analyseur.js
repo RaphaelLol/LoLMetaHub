@@ -36,8 +36,8 @@ function createMatchRow(match, player, maxDamage) {
   }
 
   // Runes
-  let runesHTML = "";
- if (player.perks?.styles) {
+ let runesHTML = "";
+if (player.perks?.styles) {
   runesHTML = player.perks.styles
     .map(style =>
       style.selections
