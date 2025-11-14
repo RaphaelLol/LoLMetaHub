@@ -18,7 +18,7 @@ function getChampionImage(name) {
 function getRuneImageById(id) {
   const iconPath = RUNE_ICON_MAP[id];
   if (!iconPath) return "";
-  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/${iconPath}`;
+  return `https://ddragon.leagueoflegends.com/img/${iconPath}`;
 }
 
 function createDamageBar(player, maxDamage) {
@@ -144,14 +144,14 @@ async function init() {
 
   // Construire le mapping des runes
   try {
-    runesData.forEach(style => {
-      if (style.id && style.icon) {
-        RUNE_ICON_MAP[style.id] = style.icon;
-      }
-      style.slots?.forEach(slot => {
-        slot.runes?.forEach(rune => {
-          if (rune.id && rune.icon) {
-            RUNE_ICON_MAP[rune.id] = rune.icon;
+   runesData.forEach(style => {
+  if (style.id && style.icon) {
+    RUNE_ICON_MAP[style.id] = style.icon;
+  }
+  style.slots?.forEach(slot => {
+    slot.runes?.forEach(rune => {
+      if (rune.id && rune.icon) {
+        RUNE_ICON_MAP[rune.id] = rune.icon;
           }
         });
       });
