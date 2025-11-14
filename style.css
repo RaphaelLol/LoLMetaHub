@@ -51,7 +51,7 @@ button:hover {
   border-radius: 10px;
   background: #1a1a1a;
   box-shadow: 0 0 10px #000;
-  max-width: 1000px;
+  max-width: 1100px;
 }
 
 .matchHeader {
@@ -60,10 +60,31 @@ button:hover {
   margin-bottom: 10px;
 }
 
+.teamLabelRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.teamLabel {
+  font-weight: bold;
+  font-size: 14px;
+}
+.teamLabel.victory {
+  color: #00c46a;
+}
+.teamLabel.defeat {
+  color: #ff5555;
+}
+.teamSpacer {
+  color: #aaa;
+}
+
 /* === TABLE === */
 .matchTable {
   width: 100%;
   border-collapse: collapse;
+  margin-top: 10px;
 }
 
 .matchTable th,
@@ -71,7 +92,20 @@ button:hover {
   padding: 8px;
   text-align: center;
   border-bottom: 1px solid #444;
+  vertical-align: middle;
   font-size: 13px;
+}
+
+.matchTable tbody tr:nth-child(odd) {
+  background: #1c1c1c;
+}
+.matchTable tbody tr:nth-child(even) {
+  background: #181818;
+}
+
+.vsCell {
+  font-weight: bold;
+  color: #f5c518;
 }
 
 /* === PLAYER CELL === */
@@ -100,9 +134,8 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-top: 4px;
   justify-content: center;
-  padding: 2px;
+  margin-top: 4px;
 }
 
 .runeIcon {
@@ -119,6 +152,7 @@ button:hover {
   flex-wrap: wrap;
   justify-content: center;
   gap: 4px;
+  margin-top: 4px;
 }
 
 .itemIcon {
@@ -134,6 +168,7 @@ button:hover {
   align-items: center;
   gap: 6px;
   justify-content: center;
+  margin-top: 4px;
 }
 
 .damageBar .bar {
@@ -147,16 +182,6 @@ button:hover {
   color: #fff;
 }
 
-/* === RESULT === */
-.victory {
-  color: #00c46a;
-  font-weight: bold;
-}
-.defeat {
-  color: #ff5555;
-  font-weight: bold;
-}
-
 /* === FOOTER === */
 footer {
   margin-top: 40px;
@@ -168,4 +193,3 @@ footer a {
 footer a:hover {
   text-decoration: underline;
 }
-
