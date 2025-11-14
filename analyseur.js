@@ -18,7 +18,8 @@ function getChampionImage(name) {
 function getRuneImageById(id) {
   const iconPath = RUNE_ICON_MAP[id];
   if (!iconPath) return "";
-  return `https://ddragon.leagueoflegends.com/img/${iconPath}`;
+  // ⚠️ Les runes doivent utiliser cdn + patch + img
+  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/${iconPath}`;
 }
 
 function createDamageBar(player, maxDamage) {
