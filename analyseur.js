@@ -9,8 +9,8 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
-function getSummonerSpellImage(id) {
-  return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${id}.png` : "";
+function getSummonerSpellImage(filename) {
+  return filename ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}` : "";
 }
 
 function getItemImage(id) {
