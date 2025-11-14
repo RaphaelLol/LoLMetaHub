@@ -1,3 +1,6 @@
+const DDRAGON_PATCH = "15.22.1"; // version du patch pour les assets
+let RUNE_ICON_MAP = {}; // id → chemin d’icône
+
 async function chargerJSON(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Erreur de chargement : " + url);
@@ -5,16 +8,17 @@ async function chargerJSON(url) {
 }
 
 function getItemImage(id) {
-  return id ? `https://ddragon.leagueoflegends.com/cdn/14.3.1/img/item/${id}.png` : "";
+  return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png` : "";
 }
-
-function getRuneImage(id) {
-  return `https://ddragon.leagueoflegends.com/cdn/15.22.1/img/perk/${id}.png`;
-}
-
 
 function getChampionImage(name) {
-  return `https://ddragon.leagueoflegends.com/cdn/14.3.1/img/champion/${name}.png`;
+  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/champion/${name}.png`;
+}
+
+function getRuneImageById(id) {
+  const iconPath = RUNE_ICON_MAP[id];
+  if (!iconPath) return "";
+  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/${iconPath}`;
 }
 
 function createDamageBar(player, maxDamage) {
@@ -36,18 +40,21 @@ function createMatchRow(match, player, maxDamage) {
   }
 
   // Runes
- let runesHTML = "";
-if (player.perks?.styles) {
-  runesHTML = player.perks.styles
-    .map(style =>
-      style.selections
-        .map(sel => `<img class="runeIcon" src="${getRuneImage(sel.perk)}" alt="">`)
-        .join("")
-    )
-    .join(" ");
+  let runesHTML = "";
+  if (player.perks?.styles) {
+    runesHTML = player.perks.styles
+      .map(style =>
+        style.selections
+          .map(sel => {
+            const url = getRuneImageById(sel.perk);
+            return url ? `<img class="runeIcon" src="${url}" alt="">` : "";
+          })
+          .join("")
+      )
+      .join(" ");
   }
 
-  // Pseudo Riot (si dispo)
+  // Pseudo Riot
   const pseudo = player.riotIdGameName
     ? `${player.riotIdGameName}#${player.riotIdTagline}`
     : (player.summonerName || "Inconnu");
@@ -126,13 +133,31 @@ async function afficherHistorique(filteredMatches) {
 }
 
 async function init() {
-  // Chargement des assets (champions, items, runes)
+  let runesData = [];
   try {
     await chargerJSON("champions.json");
     await chargerJSON("item.json");
-    await chargerJSON("runesReforged.json");
+    runesData = await chargerJSON("runesReforged.json");
   } catch (e) {
     console.warn("Impossible de charger les assets locaux :", e);
+  }
+
+  // Construire le mapping des runes
+  try {
+    runesData.forEach(style => {
+      if (style.id && style.icon) {
+        RUNE_ICON_MAP[style.id] = style.icon;
+      }
+      style.slots?.forEach(slot => {
+        slot.runes?.forEach(rune => {
+          if (rune.id && rune.icon) {
+            RUNE_ICON_MAP[rune.id] = rune.icon;
+          }
+        });
+      });
+    });
+  } catch (e) {
+    console.warn("Erreur lors du mapping des runes :", e);
   }
 
   const matchContainer = document.getElementById("matchContainer");
@@ -145,7 +170,6 @@ async function init() {
 
   let historyData = [];
 
-  // Importer un match
   importBtn?.addEventListener("click", () => importInput.click());
   importInput?.addEventListener("change", e => {
     const file = e.target.files[0];
@@ -163,7 +187,6 @@ async function init() {
     reader.readAsText(file);
   });
 
-  // Importer un historique
   importHistoryBtn?.addEventListener("click", () => importHistoryInput.click());
   importHistoryInput?.addEventListener("change", e => {
     const file = e.target.files[0];
@@ -185,7 +208,6 @@ async function init() {
     reader.readAsText(file);
   });
 
-  // Recherche par champion
   searchBtn?.addEventListener("click", () => {
     const champName = searchInput.value.trim().toLowerCase();
     if (!historyData.length) {
