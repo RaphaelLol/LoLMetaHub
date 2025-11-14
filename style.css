@@ -149,11 +149,14 @@ button:hover { background: #ffd84d; }
   display: flex;
   gap: 4px;
   margin-top: 4px;
+  border: 1px solid red; /* 👈 test visuel */
 }
 
 .runeIcon {
   width: 20px;
   height: 20px;
+  background: yellow; /* 👈 test visuel */
 }
+
 
 
