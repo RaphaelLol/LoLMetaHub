@@ -144,3 +144,16 @@ button:hover { background: #ffd84d; }
   font-weight: bold;
 }
 
+
+.runesCell {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.runeIcon {
+  width: 20px;
+  height: 20px;
+}
+
+
