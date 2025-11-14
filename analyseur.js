@@ -30,6 +30,23 @@ function createMatchRow(match, player, maxDamage) {
     if (id) itemsHTML.push(`<img class="itemIcon" src="${getItemImage(id)}" alt="">`);
   }
 
+  // Runes
+  let runesHTML = "";
+  if (player.perks?.styles) {
+    runesHTML = player.perks.styles
+      .map(style =>
+        style.selections
+          .map(sel => `<img class="runeIcon" src="https://ddragon.leagueoflegends.com/cdn/img/perk/${sel.perk}.png" alt="">`)
+          .join("")
+      )
+      .join(" ");
+  }
+
+  // Pseudo Riot (si dispo)
+  const pseudo = player.riotIdGameName
+    ? `${player.riotIdGameName}#${player.riotIdTagline}`
+    : (player.summonerName || "Inconnu");
+
   const durationMin = Math.floor(match.info.gameDuration / 60);
 
   return `
@@ -37,7 +54,8 @@ function createMatchRow(match, player, maxDamage) {
       <td>
         <div class="playerCell">
           <img src="${getChampionImage(player.championName)}" class="champIcon">
-          <span class="playerName">${player.summonerName}</span>
+          <span class="playerName">${pseudo}</span>
+          <div class="runesCell">${runesHTML}</div>
         </div>
       </td>
       <td>${player.kills}/${player.deaths}/${player.assists}</td>
