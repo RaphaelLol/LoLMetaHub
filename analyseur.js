@@ -20,8 +20,12 @@ function getChampionImage(name) {
 function getRuneImageById(id) {
   const iconPath = RUNE_ICON_MAP[id];
   if (!iconPath) return "";
-  // Important: les runes utilisent cdn + patch + img
-  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/${iconPath}`;
+  // Si le chemin contient déjà "perk-images", on ajoute le bon préfixe
+  if (iconPath.startsWith("perk-images/")) {
+    return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/${iconPath}`;
+  }
+  // Sinon, on suppose que c’est une URL complète ou un chemin incorrect
+  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/perk-images/${iconPath}`;
 }
 
 // ====== FORMATTING ======
