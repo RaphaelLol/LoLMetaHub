@@ -208,5 +208,10 @@ footer a:hover {
   object-fit: contain;
 }
 
+.spellsCell .label {
+  font-size: 11px;
+  color: #ccc;
+  margin-right: 6px;
+}
 
 
