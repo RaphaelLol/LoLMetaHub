@@ -11,9 +11,14 @@ async function chargerJSON(url) {
 
 function getSummonerSpellImage(filename) {
   if (!filename) return "";
-  const urlV = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}`;
-  const urlNV = `https://ddragon.leagueoflegends.com/cdn/img/spell/${filename}`;
-  return urlV + `" onerror="this.onerror=null;this.src='${urlNV}'`;
+
+  // 🔥 Cas spécial pour Ignite
+  if (filename === "SummonerIgnite.png") {
+    return `/static/img/spell/${filename}`;
+  }
+
+  // 🌐 Tous les autres passent par Riot CDN
+  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}`;
 }
 
 
@@ -119,27 +124,28 @@ function createDamageBar(player, maxDamage, color) {
 }
 
 // ====== PLAYER CELL (côté gauche/droit) ======
+// Fonction pour afficher un joueur
 function renderPlayerCell(p) {
   const name = playerDisplayName(p);
   const champImg = getChampionImage(p.championName);
   const runes = renderRunes(p.perks);
 
-  const spell1Id = p.summoner1Id;
-  const spell2Id = p.summoner2Id;
-  const spell1Name = Object.keys(SUMMONER_SPELLS).includes(String(spell1Id)) ? SUMMONER_SPELLS[spell1Id].replace("Summoner", "").replace(".png", "") : "Sort inconnu";
-  const spell2Name = Object.keys(SUMMONER_SPELLS).includes(String(spell2Id)) ? SUMMONER_SPELLS[spell2Id].replace("Summoner", "").replace(".png", "") : "Sort inconnu";
+  const spell1File = SUMMONER_SPELLS[p.summoner1Id];
+  const spell2File = SUMMONER_SPELLS[p.summoner2Id];
 
-  const spell1 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner1Id]);
-const spell2 = getSummonerSpellImage(SUMMONER_SPELLS[p.summoner2Id]);
+  const spell1URL = getSummonerSpellImage(spell1File);
+  const spell2URL = getSummonerSpellImage(spell2File);
 
-  
+  const spell1Name = spell1File ? spell1File.replace("Summoner","").replace(".png","") : "Sort inconnu";
+  const spell2Name = spell2File ? spell2File.replace("Summoner","").replace(".png","") : "Sort inconnu";
+
   return `
     <div class="playerCell">
       <img src="${champImg}" class="champIcon" alt="${p.championName}">
       <div class="spellsCell">
         <span class="label">Sorts :</span>
-        <img src="${spell1}" class="spellIcon" alt="${spell1Name}" title="${spell1Name}">
-        <img src="${spell2}" class="spellIcon" alt="${spell2Name}" title="${spell2Name}">
+        <img src="${spell1URL}" class="spellIcon" alt="${spell1Name}" title="${spell1Name}">
+        <img src="${spell2URL}" class="spellIcon" alt="${spell2Name}" title="${spell2Name}">
       </div>
       <span class="playerName">${name}</span>
       ${runes}
