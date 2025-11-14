@@ -20,14 +20,13 @@ function getChampionImage(name) {
 function getRuneImageById(id) {
   const iconPath = RUNE_ICON_MAP[id];
   if (!iconPath) return "";
-  // Si le chemin contient déjà "perk-images", on ajoute le bon préfixe
-  if (iconPath.startsWith("perk-images/")) {
-    return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/${iconPath}`;
+  // Si le chemin contient déjà "perk-images", on le garde
+  if (iconPath.includes("perk-images/")) {
+    return `https://ddragon.leagueoflegends.com/cdn/img/${iconPath}`;
   }
-  // Sinon, on suppose que c’est une URL complète ou un chemin incorrect
-  return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/perk-images/${iconPath}`;
+  // Sinon, on ignore cette rune (évite les chemins invalides)
+  return "";
 }
-
 // ====== FORMATTING ======
 function formatKDA(p) {
   return `${p.kills}/${p.deaths}/${p.assists}`;
@@ -53,6 +52,7 @@ function renderRunes(perks) {
       style.selections
         .map(sel => {
           const url = getRuneImageById(sel.perk);
+          if (!url) return ""; // ignore les runes sans image valide
           return url ? `<img class="runeIcon" src="${url}" alt="">` : "";
         })
         .join("")
