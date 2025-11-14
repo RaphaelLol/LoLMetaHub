@@ -1,10 +1,11 @@
+/* === GLOBAL === */
 body {
   background: #0e0e0e;
   color: #f5f5f5;
   font-family: "Segoe UI", sans-serif;
-  text-align: center;
   margin: 0;
   padding: 20px;
+  text-align: center;
 }
 
 h1 {
@@ -26,7 +27,9 @@ button {
   font-weight: bold;
   margin: 5px;
 }
-button:hover { background: #ffd84d; }
+button:hover {
+  background: #ffd84d;
+}
 
 .searchBar input {
   padding: 6px;
@@ -41,33 +44,20 @@ button:hover { background: #ffd84d; }
   margin-left: 6px;
 }
 
-/* === MATCH CARD === */
-.matchCard {
-  background: #1a1a1a;
-  border-radius: 10px;
-  padding: 15px;
+/* === MATCH BLOCK === */
+.matchBlock {
   margin: 30px auto;
-  max-width: 1000px;
+  padding: 15px;
+  border-radius: 10px;
+  background: #1a1a1a;
   box-shadow: 0 0 10px #000;
-}
-
-/* Espace entre les cartes */
-.matchCard + .matchCard {
-  margin-top: 40px;
+  max-width: 1000px;
 }
 
 .matchHeader {
-  margin-bottom: 10px;
   font-size: 18px;
   color: #f1f1f1;
-}
-
-.matchBlock {
-  margin: 20px 0;
-  padding: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #1e1e1e; /* fond sombre type U.GG */
+  margin-bottom: 10px;
 }
 
 /* === TABLE === */
@@ -76,92 +66,103 @@ button:hover { background: #ffd84d; }
   border-collapse: collapse;
 }
 
-.matchTable th, .matchTable td {
+.matchTable th,
+.matchTable td {
   padding: 8px;
   text-align: center;
   border-bottom: 1px solid #444;
+  font-size: 13px;
 }
 
-.blueTeam { background: rgba(46, 134, 222, 0.15); }
-.redTeam { background: rgba(231, 76, 60, 0.15); }
-
-.teamLabel.victory { color: #00c46a; font-weight: bold; }
-.teamLabel.defeat { color: #ff5555; font-weight: bold; }
-
-/* === PLAYER === */
+/* === PLAYER CELL === */
 .playerCell {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
+  gap: 4px;
 }
 
 .champIcon {
   width: 34px;
   height: 34px;
   border-radius: 4px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .playerName {
   font-weight: bold;
   font-size: 13px;
   color: #fff;
-  text-align: left;
 }
 
-/* === ITEMS === */
-.itemIcon {
-  width: 26px;
-  height: 26px;
-  border-radius: 4px;
-  margin: 2px;
-}
-
-/* === DAMAGE BAR === */
-.damageBar {
-  position: relative;
-  background: #222;
-  height: 14px;
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 4px 0;
-}
-
-.damageBar .bar {
-  height: 100%;
-  border-radius: 6px;
-  transition: width 0.3s ease;
-}
-
-.damageBar span {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 11px;
-  color: #fff;
-  font-weight: bold;
-}
-
-
+/* === RUNES === */
 .runesCell {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  justify-content: center;
   margin-top: 4px;
-  padding: 2px;
-  background: #222; /* test visuel temporaire */
-  border-radius: 4px;
 }
 
 .runeIcon {
   width: 22px;
   height: 22px;
   object-fit: contain;
-  border: 1px solid #444; /* test visuel temporaire */
-  background: #000; /* test visuel temporaire */
+  border-radius: 3px;
 }
 
+/* === ITEMS === */
+.itemsCell {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
 
+.itemIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  background: #222;
+}
 
+/* === DAMAGE BAR === */
+.damageBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.damageBar .bar {
+  height: 8px;
+  border-radius: 4px;
+  background: #888;
+}
+
+.damageBar span {
+  font-size: 12px;
+  color: #fff;
+}
+
+/* === RESULT === */
+.victory {
+  color: #00c46a;
+  font-weight: bold;
+}
+.defeat {
+  color: #ff5555;
+  font-weight: bold;
+}
+
+/* === FOOTER === */
+footer {
+  margin-top: 40px;
+}
+footer a {
+  color: #f5c518;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
