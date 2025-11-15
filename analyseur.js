@@ -188,47 +188,44 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
   const leftCell = leftP ? renderPlayerCell(leftP) : "<div class='playerCell'>—</div>";
   const rightCell = rightP ? renderPlayerCell(rightP) : "<div class='playerCell'>—</div>";
 
+  // Stats classiques côté bleu
   const leftStats = leftP
-  ? `
-    <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
-    <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
-    <div><strong>CS:</strong> ${formatCS(leftP)}</div>
-    <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
-    ${createDamageBar(leftP, leftMaxDmg, leftColor)}
-    ${renderItems(leftP)}
-  `
-  : "<div>—</div>";
+    ? `
+      <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
+      <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
+      <div><strong>CS:</strong> ${formatCS(leftP)}</div>
+      <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
+      ${createDamageBar(leftP, leftMaxDmg, leftColor)}
+      ${renderItems(leftP)}
+    `
+    : "<div>—</div>";
 
+  // Stats classiques côté rouge
   const rightStats = rightP
     ? `
       <div><strong>KDA:</strong> ${formatKDA(rightP)}</div>
       <div><strong>Gold:</strong> ${formatGold(rightP)}</div>
       <div><strong>CS:</strong> ${formatCS(rightP)}</div>
       <div><strong>Wards:</strong> ${rightP.wardsPlaced}</div>
-
-      <!-- 🔥 Stats avancées -->
-      <div><strong>DPM:</strong> ${(rightP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
-      <div><strong>KP:</strong> ${(((rightP.kills + rightP.assists) / teamTotalKillsRed) * 100).toFixed(1)}%</div>
-      <div><strong>Vision/min:</strong> ${(rightP.visionScore / (match.info.gameDuration/60)).toFixed(2)}</div>
-      <div><strong>Gold→Damage:</strong> ${(rightP.totalDamageDealtToChampions / rightP.goldEarned).toFixed(2)}</div>
-
       ${createDamageBar(rightP, rightMaxDmg, rightColor)}
       ${renderItems(rightP)}
     `
     : "<div>—</div>";
 
+  // Retourne la ligne complète avec 7 colonnes
   return `
     <tr>
-    <td>${renderAdvancedStats(leftP, match, teamTotalKillsBlue)}</td>
-    <td>${leftCell}</td>
-    <td>${leftStats}</td>
-    <td class="vsCell">vs</td>
-    <td>${rightStats}</td>
-    <td>${rightCell}</td>
-    <td>${renderAdvancedStats(rightP, match, teamTotalKillsRed)}</td>
-  </tr>
+      <td>${renderAdvancedStats(leftP, match, teamTotalKillsBlue)}</td>
+      <td>${leftCell}</td>
+      <td>${leftStats}</td>
+      <td class="vsCell">vs</td>
+      <td>${rightStats}</td>
+      <td>${rightCell}</td>
+      <td>${renderAdvancedStats(rightP, match, teamTotalKillsRed)}</td>
+    </tr>
   `;
 }
+
 
 // ====== MATCH RENDER (face à face) ======
 function renderMatchFaceAFace(match) {
