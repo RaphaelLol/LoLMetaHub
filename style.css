@@ -275,7 +275,7 @@ footer a:hover {
 #coachView {
   margin-top: 32px;
   padding: 24px;
-  background-color: #f9f9f9;
+  background-color: #f5f7fa;
   border-radius: 8px;
 }
 
@@ -283,7 +283,7 @@ footer a:hover {
   margin-bottom: 16px;
   padding: 8px 12px;
   font-size: 14px;
-  background-color: #eee;
+  background-color: #e0e0e0;
   border: 1px solid #ccc;
   border-radius: 6px;
   cursor: pointer;
@@ -291,42 +291,22 @@ footer a:hover {
 
 .panel {
   margin-bottom: 24px;
-  padding: 16px;
-  background-color: #fff;
-  border: 1px solid #ddd;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.panel h2 {
+.panel h3 {
   font-size: 18px;
+  font-weight: 600;
   margin-bottom: 12px;
   color: #2c3e50;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-
-.grid div {
-  background-color: #f4f4f4;
-  padding: 10px 14px;
-  border-radius: 6px;
+.panel p {
+  margin: 6px 0;
   font-size: 14px;
-  border: 1px solid #e0e0e0;
+  color: #333;
 }
-
-.notes {
-  list-style: disc;
-  padding-left: 20px;
-  font-size: 14px;
-}
-
-.notes li {
-  margin-bottom: 6px;
-}
-
-
-
