@@ -199,17 +199,6 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
   `
   : "<div>—</div>";
 
- <!-- 🔥 Stats avancées -->
-    <div><strong>DPM:</strong> ${(leftP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
-<div><strong>KP:</strong> ${(((leftP.kills + leftP.assists) / teamTotalKillsBlue) * 100).toFixed(1)}%</div>
-<div><strong>Vision/min:</strong> ${(leftP.visionScore / (match.info.gameDuration/60)).toFixed(2)}</div>
-<div><strong>Gold→Damage:</strong> ${(leftP.totalDamageDealtToChampions / leftP.goldEarned).toFixed(2)}</div>
-
-${createDamageBar(leftP, leftMaxDmg, leftColor)}
-${renderItems(leftP)}
-`
-    : "<div>—</div>";
-
   const rightStats = rightP
     ? `
       <div><strong>KDA:</strong> ${formatKDA(rightP)}</div>
