@@ -149,7 +149,7 @@ function renderAdvancedStats(p, match, teamTotalKills) {
 }
 
 // ====== PLAYER CELL ======
-function renderPlayerCell(p) {
+function renderPlayerCell(p, matchId) {
   const name = playerDisplayName(p);
   const champImg = getChampionImage(p.championName);
   const runes = renderRunes(p.perks);
@@ -176,8 +176,18 @@ function renderPlayerCell(p) {
       </div>
       <span class="playerName">${name}</span>
       ${runes}
+      <button class="coachBtn"
+        onclick="ouvrirVueCoach('${matchId}', '${p.puuid}', '${p.teamId}', '${p.individualPosition}')">
+        Vue Coach
+      </button>
     </div>
   `;
+}
+
+// ====== FONCTION VUE COACH ======
+function ouvrirVueCoach(matchId, puuid, teamId, role) {
+  const url = `coachView.html?matchId=${encodeURIComponent(matchId)}&puuid=${encodeURIComponent(puuid)}&teamId=${teamId}&role=${encodeURIComponent(role)}`;
+  window.open(url, "_blank"); // ouvre dans un nouvel onglet
 }
 
 // ====== ROW FACE-À-FACE ======
