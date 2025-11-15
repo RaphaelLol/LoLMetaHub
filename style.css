@@ -270,11 +270,11 @@ footer a:hover {
 .matchTable colgroup col:nth-child(7) { width: 160px; } /* avancées rouge */
 
 
-/* ===== VUE COACH harmonisée ===== */
+/* ===== VUE COACH harmonisée avec l’analyseur ===== */
 #coachView {
   margin-top: 32px;
   padding: 24px;
-  background-color: #f0f2f5; /* même fond que l’historique */
+  background-color: #f0f2f5; /* même fond que le conteneur principal */
   border-radius: 8px;
 }
 
@@ -292,12 +292,13 @@ footer a:hover {
 .panel {
   margin-bottom: 24px;
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #fff;
   border: 1px solid #dcdfe6;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
+.panel h2,
 .panel h3 {
   font-size: 18px;
   font-weight: 600;
@@ -333,5 +334,3 @@ footer a:hover {
   font-size: 12px;
   color: #333;
 }
-
-
