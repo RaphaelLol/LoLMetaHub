@@ -200,12 +200,6 @@ function ouvrirVueCoach(matchId, puuid, teamId, role) {
     return;
   }
 
-  
-function fermerCoachView() {
-  document.getElementById("coachView").style.display = "none";
-  document.getElementById("matchContainer").style.display = "block";
-}
-
   // Trouver l’adversaire du même rôle
   const opponent = match.info.participants.find(p =>
     p.individualPosition === player.individualPosition && p.teamId !== player.teamId
@@ -216,7 +210,18 @@ function fermerCoachView() {
   document.getElementById("coachView").style.display = "block";
 
   // Remplir la vue coach
-  function renderCoachHeader(player, match) {
+  renderCoachHeader(player, match);
+  renderCoachContent(player, opponent, match);
+}
+
+// ====== FERMER VUE COACH ======
+function fermerCoachView() {
+  document.getElementById("coachView").style.display = "none";
+  document.getElementById("matchContainer").style.display = "block";
+}
+
+// ====== RENDU HEADER ======
+function renderCoachHeader(player, match) {
   const win = player.win ? "Victoire" : "Défaite";
   const durationMin = Math.round(match.info.gameDuration / 60);
   document.getElementById("coachHeader").innerHTML = `
@@ -225,6 +230,7 @@ function fermerCoachView() {
   `;
 }
 
+// ====== RENDU CONTENU ======
 function renderCoachContent(player, opponent, match) {
   const minutes = Math.max(1, Math.round(match.info.gameDuration / 60));
   const visionPerMin = (player.visionScore / minutes).toFixed(2);
@@ -246,6 +252,7 @@ function renderCoachContent(player, opponent, match) {
     </div>
   `;
 }
+
 
 
 
