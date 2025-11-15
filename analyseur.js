@@ -134,6 +134,20 @@ function renderItems(p) {
   return `<div class="itemsCell">${itemsHTML.join("")}</div>`;
 }
 
+// ====== ADVANCED STATS (bloc latéral) ======
+function renderAdvancedStats(p, match, teamTotalKills) {
+  if (!p) return "<div class='advancedStats'>—</div>";
+  const minutes = (match.info.gameDuration || 0) / 60;
+  return `
+    <div class="advancedStats">
+      <div><strong>DPM:</strong> ${(p.totalDamageDealtToChampions / minutes).toFixed(1)}</div>
+      <div><strong>KP:</strong> ${(((p.kills + p.assists) / teamTotalKills) * 100).toFixed(1)}%</div>
+      <div><strong>Vision/min:</strong> ${(p.visionScore / minutes).toFixed(2)}</div>
+      <div><strong>Gold→Damage:</strong> ${(p.totalDamageDealtToChampions / p.goldEarned).toFixed(2)}</div>
+    </div>
+  `;
+}
+
 // ====== PLAYER CELL ======
 function renderPlayerCell(p) {
   const name = playerDisplayName(p);
@@ -175,11 +189,15 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
   const rightCell = rightP ? renderPlayerCell(rightP) : "<div class='playerCell'>—</div>";
 
   const leftStats = leftP
-    ? `
-      <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
-      <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
-      <div><strong>CS:</strong> ${formatCS(leftP)}</div>
-      <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
+  ? `
+    <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
+    <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
+    <div><strong>CS:</strong> ${formatCS(leftP)}</div>
+    <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
+    ${createDamageBar(leftP, leftMaxDmg, leftColor)}
+    ${renderItems(leftP)}
+  `
+  : "<div>—</div>";
 
  <!-- 🔥 Stats avancées -->
     <div><strong>DPM:</strong> ${(leftP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
@@ -212,12 +230,14 @@ ${renderItems(leftP)}
 
   return `
     <tr>
-      <td>${leftCell}</td>
-      <td>${leftStats}</td>
-      <td class="vsCell">vs</td>
-      <td>${rightStats}</td>
-      <td>${rightCell}</td>
-    </tr>
+    <td>${renderAdvancedStats(leftP, match, teamTotalKillsBlue)}</td>
+    <td>${leftCell}</td>
+    <td>${leftStats}</td>
+    <td class="vsCell">vs</td>
+    <td>${rightStats}</td>
+    <td>${rightCell}</td>
+    <td>${renderAdvancedStats(rightP, match, teamTotalKillsRed)}</td>
+  </tr>
   `;
 }
 
@@ -268,14 +288,16 @@ function renderMatchFaceAFace(match) {
       </div>
       <table class="matchTable">
         <thead>
-          <tr>
-            <th>Bleu (champion + pseudo + runes)</th>
-            <th>Stats bleu</th>
-            <th>vs</th>
-            <th>Stats rouge</th>
-            <th>Rouge (champion + pseudo + runes)</th>
-          </tr>
-        </thead>
+  <tr>
+    <th>Stats avancées (bleu)</th>
+    <th>Bleu (champion + pseudo + runes)</th>
+    <th>Stats bleu</th>
+    <th>vs</th>
+    <th>Stats rouge</th>
+    <th>Rouge (champion + pseudo + runes)</th>
+    <th>Stats avancées (rouge)</th>
+  </tr>
+</thead>
         <tbody>
           ${rows}
         </tbody>
