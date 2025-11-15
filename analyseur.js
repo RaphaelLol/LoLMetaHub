@@ -287,6 +287,10 @@ function renderMatchFaceAFace(match) {
         <div class="teamLabel ${redWin ? "victory" : "defeat"}">Équipe rouge: ${redWin ? "Victoire" : "Défaite"}</div>
       </div>
       <table class="matchTable">
+       <colgroup>
+    <col><col><col><col><col><col><col>
+  </colgroup>
+  ...
         <thead>
   <tr>
     <th>Stats avancées (bleu)</th>
