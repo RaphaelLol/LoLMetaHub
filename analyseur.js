@@ -426,8 +426,8 @@ async function init() {
   const searchInput = document.getElementById("championSearch");
   const searchBtn = document.getElementById("searchBtn");
 
-  let historyData = [];
-
+  window.historyData = [];
+  
   // Import d'une seule partie
   importBtn?.addEventListener("click", () => importInput.click());
   importInput?.addEventListener("change", e => {
