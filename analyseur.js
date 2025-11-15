@@ -21,7 +21,6 @@ function getSummonerSpellImage(filename) {
   return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}`;
 }
 
-
 function getItemImage(id) {
   return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png` : "";
 }
@@ -38,6 +37,7 @@ function getRuneImageById(id) {
   }
   return "";
 }
+
 // ====== FORMATTING ======
 function formatKDA(p) {
   return `${p.kills}/${p.deaths}/${p.assists}`;
@@ -53,6 +53,44 @@ function formatGold(p) {
 
 function playerDisplayName(p) {
   return p.riotIdGameName ? `${p.riotIdGameName}#${p.riotIdTagline}` : (p.summonerName || "Inconnu");
+}
+
+// ====== SUMMONER SPELLS ======
+const SUMMONER_SPELLS = {
+  1: "SummonerBoost.png",
+  3: "SummonerExhaust.png",
+  4: "SummonerFlash.png",
+  6: "SummonerHaste.png",
+  7: "SummonerHeal.png",
+  11: "SummonerSmite.png",
+  12: "SummonerTeleport.png",
+  13: "SummonerMana.png",
+  14: "SummonerIgnite.png", // Ignite → cas spécial
+  21: "SummonerBarrier.png",
+};
+
+const SUMMONER_SPELL_DESCRIPTIONS = {
+  "SummonerBoost.png": "Supprime les effets de contrôle et réduit ceux à venir.",
+  "SummonerExhaust.png": "Réduit la vitesse et les dégâts de la cible.",
+  "SummonerFlash.png": "Téléporte votre champion sur une courte distance.",
+  "SummonerHaste.png": "Augmente fortement la vitesse de déplacement.",
+  "SummonerHeal.png": "Soigne et augmente la vitesse de déplacement.",
+  "SummonerSmite.png": "Inflige des dégâts aux monstres et sbires.",
+  "SummonerTeleport.png": "Téléporte vers une tourelle, un sbire ou un allié.",
+  "SummonerMana.png": "Restaure du mana à vous et vos alliés proches.",
+  "SummonerIgnite.png": "Inflige des dégâts sur la durée et réduit les soins.",
+  "SummonerBarrier.png": "Crée un bouclier temporaire qui absorbe les dégâts.",
+};
+
+// ====== DAMAGE BAR ======
+function createDamageBar(player, maxDamage, color) {
+  const pct = maxDamage ? Math.round((player.totalDamageDealtToChampions / maxDamage) * 100) : 0;
+  return `
+    <div class="damageBar" title="${player.totalDamageDealtToChampions.toLocaleString()}">
+      <div class="bar" style="width:${pct}%; background:${color};"></div>
+      <span>${player.totalDamageDealtToChampions.toLocaleString()}</span>
+    </div>
+  `;
 }
 
 // ====== RUNES RENDER ======
@@ -82,59 +120,7 @@ function renderItems(p) {
   return `<div class="itemsCell">${itemsHTML.join("")}</div>`;
 }
 
-// ====== ROLE ORDERING ======
-const ROLE_ORDER = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"];
-function normalizeRole(pos) {
-  const v = (pos || "").toUpperCase();
-  if (ROLE_ORDER.includes(v)) return v;
-  if (v.includes("TOP")) return "TOP";
-  if (v.includes("JUNG")) return "JUNGLE";
-  if (v.includes("MID") || v.includes("MIDDLE")) return "MIDDLE";
-  if (v.includes("ADC") || v.includes("BOTTOM") || v.includes("BOT")) return "BOTTOM";
-  if (v.includes("SUPPORT") || v.includes("UTIL")) return "UTILITY";
-  return "";
-}
-
-const SUMMONER_SPELLS = {
-  1: "SummonerBoost.png",
-  3: "SummonerExhaust.png",
-  4: "SummonerFlash.png",
-  6: "SummonerHaste.png",
-  7: "SummonerHeal.png",
-  11: "SummonerSmite.png",
-  12: "SummonerTeleport.png",
-  13: "SummonerMana.png",
-  14: "SummonerIgnite.png", // Ignite → cas spécial
-  21: "SummonerBarrier.png",
-};
-
-const SUMMONER_SPELL_DESCRIPTIONS = {
-  "SummonerBoost.png": "Supprime tous les effets de contrôle et réduit les effets futurs pendant quelques secondes.",
-  "SummonerExhaust.png": "Réduit la vitesse de déplacement et les dégâts infligés par la cible.",
-  "SummonerFlash.png": "Téléporte votre champion sur une courte distance.",
-  "SummonerHaste.png": "Augmente fortement la vitesse de déplacement pendant un court instant.",
-  "SummonerHeal.png": "Soigne votre champion et un allié proche, tout en augmentant la vitesse de déplacement.",
-  "SummonerSmite.png": "Inflige des dégâts aux monstres et sbires. Nécessaire pour la jungle.",
-  "SummonerTeleport.png": "Téléporte votre champion vers une tourelle, un sbire ou un allié.",
-  "SummonerMana.png": "Restaure du mana à votre champion et aux alliés proches.",
-  "SummonerIgnite.png": "Inflige des dégâts sur la durée et réduit les soins reçus par la cible.",
-  "SummonerBarrier.png": "Crée un bouclier temporaire qui absorbe les dégâts.",
-};
-
-
-// ====== DAMAGE BAR (par joueur) ======
-function createDamageBar(player, maxDamage, color) {
-  const pct = maxDamage ? Math.round((player.totalDamageDealtToChampions / maxDamage) * 100) : 0;
-  return `
-    <div class="damageBar" title="${player.totalDamageDealtToChampions.toLocaleString()}">
-      <div class="bar" style="width:${pct}%; background:${color};"></div>
-      <span>${player.totalDamageDealtToChampions.toLocaleString()}</span>
-    </div>
-  `;
-}
-
-// ====== PLAYER CELL (côté gauche/droit) ======
-// Fonction pour afficher un joueur
+// ====== PLAYER CELL ======
 function renderPlayerCell(p) {
   const name = playerDisplayName(p);
   const champImg = getChampionImage(p.championName);
@@ -152,7 +138,6 @@ function renderPlayerCell(p) {
   const spell1Desc = SUMMONER_SPELL_DESCRIPTIONS[spell1File] || spell1Name;
   const spell2Desc = SUMMONER_SPELL_DESCRIPTIONS[spell2File] || spell2Name;
 
-
   return `
     <div class="playerCell">
       <img src="${champImg}" class="champIcon" alt="${p.championName}">
@@ -160,7 +145,6 @@ function renderPlayerCell(p) {
         <span class="label">Sorts :</span>
         <img src="${spell1URL}" class="spellIcon" alt="${spell1Name}" title="${spell1Desc}">
         <img src="${spell2URL}" class="spellIcon" alt="${spell2Name}" title="${spell2Desc}">
-
       </div>
       <span class="playerName">${name}</span>
       ${runes}
@@ -169,39 +153,44 @@ function renderPlayerCell(p) {
 }
 
 // ====== ROW FACE-À-FACE ======
-function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg) {
+function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKillsBlue, teamTotalKillsRed, match) {
   const leftColor = "#3498db"; // bleu
   const rightColor = "#e74c3c"; // rouge
 
-  // Si un côté est manquant (parties normales ont 5v5 mais on sécurise)
   const leftCell = leftP ? renderPlayerCell(leftP) : "<div class='playerCell'>—</div>";
   const rightCell = rightP ? renderPlayerCell(rightP) : "<div class='playerCell'>—</div>";
 
   const leftStats = leftP
-  ? `
-    <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
-    <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
-    <div><strong>CS:</strong> ${formatCS(leftP)}</div>
-    <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
+    ? `
+      <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
+      <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
+      <div><strong>CS:</strong> ${formatCS(leftP)}</div>
+      <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
 
-    <!-- 🔥 Stats avancées -->
-    <div><strong>DPM:</strong> ${(leftP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
-    <div><strong>KP:</strong> ${(((leftP.kills + leftP.assists) / teamTotalKillsBlue) * 100).toFixed(1)}%</div>
-    <div><strong>Vision/min:</strong> ${(leftP.visionScore / (match.info.gameDuration/60)).toFixed(2)}</div>
-    <div><strong>Gold→Damage:</strong> ${(leftP.totalDamageDealtToChampions / leftP.goldEarned).toFixed(2)}</div>
+      <!-- 🔥 Stats avancées -->
+      <div><strong>DPM:</strong> ${(leftP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
+      <div><strong>KP:</strong> ${(((leftP.kills + leftP.assists) / teamTotalKillsBlue) * 100).toFixed(1)}%</div>
+      <div><strong>Vision/min:</strong> ${(leftP.visionScore / (match.info.gameDuration/60)).toFixed(2)}</div>
+      <div><strong>Gold→Damage:</strong> ${(leftP.totalDamageDealtToChampions / leftP.goldEarned).toFixed(2)}</div>
 
-    ${createDamageBar(leftP, leftMaxDmg, leftColor)}
-    ${renderItems(leftP)}
-  `
-  : "<div>—</div>";
+      ${createDamageBar(leftP, leftMaxDmg, leftColor)}
+      ${renderItems(leftP)}
+    `
+    : "<div>—</div>";
 
-
-  const rightStats = rightP
+   const rightStats = rightP
     ? `
       <div><strong>KDA:</strong> ${formatKDA(rightP)}</div>
       <div><strong>Gold:</strong> ${formatGold(rightP)}</div>
       <div><strong>CS:</strong> ${formatCS(rightP)}</div>
       <div><strong>Wards:</strong> ${rightP.wardsPlaced}</div>
+
+      <!-- 🔥 Stats avancées -->
+      <div><strong>DPM:</strong> ${(rightP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
+      <div><strong>KP:</strong> ${(((rightP.kills + rightP.assists) / teamTotalKillsRed) * 100).toFixed(1)}%</div>
+      <div><strong>Vision/min:</strong> ${(rightP.visionScore / (match.info.gameDuration/60)).toFixed(2)}</div>
+      <div><strong>Gold→Damage:</strong> ${(rightP.totalDamageDealtToChampions / rightP.goldEarned).toFixed(2)}</div>
+
       ${createDamageBar(rightP, rightMaxDmg, rightColor)}
       ${renderItems(rightP)}
     `
@@ -228,13 +217,9 @@ function renderMatchFaceAFace(match) {
   const leftMax = Math.max(...blue.map(p => p.totalDamageDealtToChampions), 0);
   const rightMax = Math.max(...red.map(p => p.totalDamageDealtToChampions), 0);
 
-  // 👉 C’est ici que tu ajoutes le calcul des kills totaux
+  // 👉 Calcul des kills totaux par équipe
   const teamTotalKillsBlue = blue.reduce((sum, p) => sum + p.kills, 0);
   const teamTotalKillsRed = red.reduce((sum, p) => sum + p.kills, 0);
-
-  <div><strong>KP:</strong> ${(((leftP.kills + leftP.assists) / teamTotalKillsBlue) * 100).toFixed(1)}%</div>
-  <div><strong>KP:</strong> ${(((rightP.kills + rightP.assists) / teamTotalKillsRed) * 100).toFixed(1)}%</div>
-
 
   // Map rôle -> joueur
   const blueByRole = {};
@@ -256,7 +241,7 @@ function renderMatchFaceAFace(match) {
   ROLE_ORDER.forEach(role => {
     const leftP = blueByRole[role];
     const rightP = redByRole[role];
-    rows += renderFaceToFaceRow(leftP, rightP, leftMax, rightMax);
+    rows += renderFaceToFaceRow(leftP, rightP, leftMax, rightMax, teamTotalKillsBlue, teamTotalKillsRed, match);
   });
 
   return `
@@ -285,7 +270,7 @@ function renderMatchFaceAFace(match) {
   `;
 }
 
-// ====== HISTORIQUE (plusieurs parties) ======
+// ====== HISTORIQUE ======
 async function afficherHistorique(matches) {
   const container = document.getElementById("matchContainer");
   container.innerHTML = "";
@@ -304,7 +289,6 @@ async function afficherHistorique(matches) {
 async function init() {
   let runesData = [];
   try {
-    // charges locales en amont si tu les utilises (optionnel mais garde la logique)
     await chargerJSON("champions.json");
     await chargerJSON("item.json");
     runesData = await chargerJSON("runesReforged.json");
@@ -312,7 +296,6 @@ async function init() {
     console.warn("Impossible de charger les assets locaux :", e);
   }
 
-  // Construire le mapping des runes
   try {
     runesData.forEach(style => {
       if (style.id && style.icon) {
@@ -358,9 +341,7 @@ async function init() {
     reader.readAsText(file);
   });
 
-  
-
-  // Import de l'historique (plusieurs parties)
+  // Import de l'historique
   importHistoryBtn?.addEventListener("click", () => importHistoryInput.click());
   importHistoryInput?.addEventListener("change", e => {
     const file = e.target.files[0];
@@ -382,7 +363,7 @@ async function init() {
     reader.readAsText(file);
   });
 
-  // Recherche par champion (filtrage de l'historique)
+  // Recherche par champion
   searchBtn?.addEventListener("click", () => {
     const champName = (searchInput.value || "").trim().toLowerCase();
     if (!historyData.length) {
