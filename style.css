@@ -270,12 +270,11 @@ footer a:hover {
 .matchTable colgroup col:nth-child(7) { width: 160px; } /* avancées rouge */
 
 
-
-/* ===== VUE COACH ===== */
+/* ===== VUE COACH harmonisée ===== */
 #coachView {
   margin-top: 32px;
   padding: 24px;
-  background-color: #f5f7fa;
+  background-color: #f0f2f5; /* même fond que l’historique */
   border-radius: 8px;
 }
 
@@ -287,6 +286,7 @@ footer a:hover {
   border: 1px solid #ccc;
   border-radius: 6px;
   cursor: pointer;
+  color: #333;
 }
 
 .panel {
@@ -308,5 +308,30 @@ footer a:hover {
 .panel p {
   margin: 6px 0;
   font-size: 14px;
+  color: #444;
+}
+
+/* Barres de dégâts */
+.damageBar {
+  margin-top: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  height: 20px;
+}
+
+.damageBar .bar {
+  height: 100%;
+  background-color: #3498db; /* bleu comme les barres de l’historique */
+}
+
+.damageBar span {
+  position: absolute;
+  right: 8px;
+  top: 2px;
+  font-size: 12px;
   color: #333;
 }
+
+
