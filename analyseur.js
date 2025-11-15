@@ -261,8 +261,9 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
   const leftColor = "#3498db"; // bleu
   const rightColor = "#e74c3c"; // rouge
 
-  const leftCell = leftP ? renderPlayerCell(leftP) : "<div class='playerCell'>—</div>";
-  const rightCell = rightP ? renderPlayerCell(rightP) : "<div class='playerCell'>—</div>";
+  // ⚠️ Correction : on passe bien match.metadata.matchId à renderPlayerCell
+  const leftCell = leftP ? renderPlayerCell(leftP, match.metadata.matchId) : "<div class='playerCell'>—</div>";
+  const rightCell = rightP ? renderPlayerCell(rightP, match.metadata.matchId) : "<div class='playerCell'>—</div>";
 
   // Stats classiques côté bleu
   const leftStats = leftP
@@ -305,7 +306,6 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
 }
 
 
-
 // ====== MATCH RENDER (face à face) ======
 function renderMatchFaceAFace(match) {
   const players = match.info.participants || [];
@@ -340,33 +340,45 @@ function renderMatchFaceAFace(match) {
   ROLE_ORDER.forEach(role => {
     const leftP = blueByRole[role];
     const rightP = redByRole[role];
-    rows += renderFaceToFaceRow(leftP, rightP, leftMax, rightMax, teamTotalKillsBlue, teamTotalKillsRed, match);
+    // ⚠️ Correction : on passe bien match.metadata.matchId à renderFaceToFaceRow
+    rows += renderFaceToFaceRow(
+      leftP,
+      rightP,
+      leftMax,
+      rightMax,
+      teamTotalKillsBlue,
+      teamTotalKillsRed,
+      match
+    );
   });
 
   return `
     <div class="matchBlock">
       <h2 class="matchHeader">Partie — ${durationMin}m</h2>
       <div class="teamLabelRow">
-        <div class="teamLabel ${blueWin ? "victory" : "defeat"}">Équipe bleue: ${blueWin ? "Victoire" : "Défaite"}</div>
+        <div class="teamLabel ${blueWin ? "victory" : "defeat"}">
+          Équipe bleue: ${blueWin ? "Victoire" : "Défaite"}
+        </div>
         <div class="teamSpacer">vs</div>
-        <div class="teamLabel ${redWin ? "victory" : "defeat"}">Équipe rouge: ${redWin ? "Victoire" : "Défaite"}</div>
+        <div class="teamLabel ${redWin ? "victory" : "defeat"}">
+          Équipe rouge: ${redWin ? "Victoire" : "Défaite"}
+        </div>
       </div>
       <table class="matchTable">
-       <colgroup>
-    <col><col><col><col><col><col><col>
-  </colgroup>
-  ...
+        <colgroup>
+          <col><col><col><col><col><col><col>
+        </colgroup>
         <thead>
-  <tr>
-    <th>Stats avancées (bleu)</th>
-    <th>Bleu (champion + pseudo + runes)</th>
-    <th>Stats bleu</th>
-    <th>vs</th>
-    <th>Stats rouge</th>
-    <th>Rouge (champion + pseudo + runes)</th>
-    <th>Stats avancées (rouge)</th>
-  </tr>
-</thead>
+          <tr>
+            <th>Stats avancées (bleu)</th>
+            <th>Bleu (champion + pseudo + runes)</th>
+            <th>Stats bleu</th>
+            <th>vs</th>
+            <th>Stats rouge</th>
+            <th>Rouge (champion + pseudo + runes)</th>
+            <th>Stats avancées (rouge)</th>
+          </tr>
+        </thead>
         <tbody>
           ${rows}
         </tbody>
@@ -374,6 +386,7 @@ function renderMatchFaceAFace(match) {
     </div>
   `;
 }
+
 
 // ====== HISTORIQUE ======
 async function afficherHistorique(matches) {
