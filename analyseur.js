@@ -186,9 +186,68 @@ function renderPlayerCell(p, matchId) {
 
 // ====== FONCTION VUE COACH ======
 function ouvrirVueCoach(matchId, puuid, teamId, role) {
-  const url = `coachView.html?matchId=${encodeURIComponent(matchId)}&puuid=${encodeURIComponent(puuid)}&teamId=${teamId}&role=${encodeURIComponent(role)}`;
-  window.open(url, "_blank"); // ouvre dans un nouvel onglet
+  // Récupérer le match depuis l'historique déjà chargé
+  const match = (window.historyData || []).find(m => m.metadata.matchId === matchId);
+  if (!match) {
+    console.error("Match introuvable:", matchId);
+    return;
+  }
+
+  // Trouver le joueur
+  const player = match.info.participants.find(p => p.puuid === puuid);
+  if (!player) {
+    console.error("Joueur introuvable:", puuid);
+    return;
+  }
+
+  
+function fermerCoachView() {
+  document.getElementById("coachView").style.display = "none";
+  document.getElementById("matchContainer").style.display = "block";
 }
+
+  // Trouver l’adversaire du même rôle
+  const opponent = match.info.participants.find(p =>
+    p.individualPosition === player.individualPosition && p.teamId !== player.teamId
+  );
+
+  // Masquer la vue principale
+  document.getElementById("matchContainer").style.display = "none";
+  document.getElementById("coachView").style.display = "block";
+
+  // Remplir la vue coach
+  function renderCoachHeader(player, match) {
+  const win = player.win ? "Victoire" : "Défaite";
+  const durationMin = Math.round(match.info.gameDuration / 60);
+  document.getElementById("coachHeader").innerHTML = `
+    <h2>${player.summonerName} — ${player.championName}</h2>
+    <p><strong>Résultat:</strong> ${win} | <strong>Durée:</strong> ${durationMin} min</p>
+  `;
+}
+
+function renderCoachContent(player, opponent, match) {
+  const minutes = Math.max(1, Math.round(match.info.gameDuration / 60));
+  const visionPerMin = (player.visionScore / minutes).toFixed(2);
+  const dpm = (player.totalDamageDealtToChampions / minutes).toFixed(1);
+
+  document.getElementById("coachContent").innerHTML = `
+    <div class="panel">
+      <h3>Performance individuelle</h3>
+      <p>KDA: ${player.kills}/${player.deaths}/${player.assists}</p>
+      <p>Gold: ${player.goldEarned}</p>
+      <p>CS: ${player.totalMinionsKilled + player.neutralMinionsKilled}</p>
+      <p>DPM: ${dpm}</p>
+      <p>Vision Score: ${player.visionScore} (${visionPerMin}/min)</p>
+    </div>
+    <div class="panel">
+      <h3>Comparaison avec l’adversaire (${opponent?.championName || "—"})</h3>
+      <p>DPM adverse: ${opponent ? (opponent.totalDamageDealtToChampions / minutes).toFixed(1) : "—"}</p>
+      <p>Vision adverse: ${opponent ? opponent.visionScore : "—"}</p>
+    </div>
+  `;
+}
+
+
 
 // ====== ROW FACE-À-FACE ======
 function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKillsBlue, teamTotalKillsRed, match) {
