@@ -194,7 +194,8 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
       <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
       <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
       <div><strong>CS:</strong> ${formatCS(leftP)}</div>
-      <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
+      <div><strong>Vision Score:</strong> ${player.visionScore}</div>
+
       ${createDamageBar(leftP, leftMaxDmg, leftColor)}
       ${renderItems(leftP)}
     `
@@ -206,7 +207,8 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
       <div><strong>KDA:</strong> ${formatKDA(rightP)}</div>
       <div><strong>Gold:</strong> ${formatGold(rightP)}</div>
       <div><strong>CS:</strong> ${formatCS(rightP)}</div>
-      <div><strong>Wards:</strong> ${rightP.wardsPlaced}</div>
+      <div><strong>Vision Score:</strong> ${player.visionScore}</div>
+
       ${createDamageBar(rightP, rightMaxDmg, rightColor)}
       ${renderItems(rightP)}
     `
