@@ -82,6 +82,20 @@ const SUMMONER_SPELL_DESCRIPTIONS = {
   "SummonerBarrier.png": "Crée un bouclier temporaire qui absorbe les dégâts.",
 };
 
+// ====== ROLE ORDERING ======
+const ROLE_ORDER = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"];
+
+function normalizeRole(pos) {
+  const v = (pos || "").toUpperCase();
+  if (ROLE_ORDER.includes(v)) return v;
+  if (v.includes("TOP")) return "TOP";
+  if (v.includes("JUNG")) return "JUNGLE";
+  if (v.includes("MID") || v.includes("MIDDLE")) return "MIDDLE";
+  if (v.includes("ADC") || v.includes("BOTTOM") || v.includes("BOT")) return "BOTTOM";
+  if (v.includes("SUPPORT") || v.includes("UTIL")) return "UTILITY";
+  return "";
+}
+
 // ====== DAMAGE BAR ======
 function createDamageBar(player, maxDamage, color) {
   const pct = maxDamage ? Math.round((player.totalDamageDealtToChampions / maxDamage) * 100) : 0;
@@ -167,18 +181,18 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
       <div><strong>CS:</strong> ${formatCS(leftP)}</div>
       <div><strong>Wards:</strong> ${leftP.wardsPlaced}</div>
 
-      <!-- 🔥 Stats avancées -->
-      <div><strong>DPM:</strong> ${(leftP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
-      <div><strong>KP:</strong> ${(((leftP.kills + leftP.assists) / teamTotalKillsBlue) * 100).toFixed(1)}%</div>
-      <div><strong>Vision/min:</strong> ${(leftP.visionScore / (match.info.gameDuration/60)).toFixed(2)}</div>
-      <div><strong>Gold→Damage:</strong> ${(leftP.totalDamageDealtToChampions / leftP.goldEarned).toFixed(2)}</div>
+ <!-- 🔥 Stats avancées -->
+    <div><strong>DPM:</strong> ${(leftP.totalDamageDealtToChampions / (match.info.gameDuration/60)).toFixed(1)}</div>
+<div><strong>KP:</strong> ${(((leftP.kills + leftP.assists) / teamTotalKillsBlue) * 100).toFixed(1)}%</div>
+<div><strong>Vision/min:</strong> ${(leftP.visionScore / (match.info.gameDuration/60)).toFixed(2)}</div>
+<div><strong>Gold→Damage:</strong> ${(leftP.totalDamageDealtToChampions / leftP.goldEarned).toFixed(2)}</div>
 
-      ${createDamageBar(leftP, leftMaxDmg, leftColor)}
-      ${renderItems(leftP)}
-    `
+${createDamageBar(leftP, leftMaxDmg, leftColor)}
+${renderItems(leftP)}
+`
     : "<div>—</div>";
 
-   const rightStats = rightP
+  const rightStats = rightP
     ? `
       <div><strong>KDA:</strong> ${formatKDA(rightP)}</div>
       <div><strong>Gold:</strong> ${formatGold(rightP)}</div>
