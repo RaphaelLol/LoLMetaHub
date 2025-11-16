@@ -186,8 +186,14 @@ function renderPlayerCell(p, matchId) {
 
 // ====== FONCTION VUE COACH ======
 function ouvrirVueCoach(matchId, puuid, teamId, role) {
-  const match = (window.historyData || []).find(m => m.metadata.matchId === matchId);
-  if (!match) return;
+  const match =
+    (window.historyData || []).find(m => m.metadata.matchId === matchId) ||
+    (window.importedMatch?.metadata?.matchId === matchId ? window.importedMatch : null);
+  
+  if (!match) {
+    console.warn("Match introuvable:", matchId);
+    return;
+  }
 
   const player = match.info.participants.find(p => p.puuid === puuid);
   if (!player) return;
