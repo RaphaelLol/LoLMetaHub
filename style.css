@@ -270,67 +270,73 @@ footer a:hover {
 .matchTable colgroup col:nth-child(7) { width: 160px; } /* avancées rouge */
 
 
-/* ===== VUE COACH harmonisée avec l’analyseur ===== */
+/* ===== VUE COACH sombre et cohérente ===== */
 #coachView {
-  margin-top: 32px;
-  padding: 24px;
-  background-color: #f0f2f5; /* même fond que le conteneur principal */
-  border-radius: 8px;
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #0e0e0e;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #000;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .backBtn {
   margin-bottom: 16px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   font-size: 14px;
-  background-color: #e0e0e0;
-  border: 1px solid #ccc;
+  background-color: #f5c518;
+  color: #000;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
-  color: #333;
+  font-weight: bold;
+}
+.backBtn:hover {
+  background-color: #ffd84d;
 }
 
 .panel {
   margin-bottom: 24px;
   padding: 20px;
-  background-color: #fff;
-  border: 1px solid #dcdfe6;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #000;
+  text-align: left;
 }
 
 .panel h2,
 .panel h3 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: bold;
   margin-bottom: 12px;
-  color: #2c3e50;
+  color: #f5c518;
 }
 
 .panel p {
   margin: 6px 0;
   font-size: 14px;
-  color: #444;
+  color: #f5f5f5;
 }
 
 /* Barres de dégâts */
 .damageBar {
-  margin-top: 8px;
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-  height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-start;
+  margin-top: 6px;
 }
 
 .damageBar .bar {
-  height: 100%;
-  background-color: #3498db; /* bleu comme les barres de l’historique */
+  height: 8px;
+  min-width: 90px;
+  border-radius: 4px;
+  background: #888;
 }
 
 .damageBar span {
-  position: absolute;
-  right: 8px;
-  top: 2px;
-  font-size: 12px;
-  color: #333;
+  font-size: 11px;
+  color: #f5f5f5;
 }
