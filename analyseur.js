@@ -450,14 +450,18 @@ async function init() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = async ev => {
-      try {
-        const matchData = JSON.parse(ev.target.result);
-        matchContainer.innerHTML = "";
-        await afficherHistorique([matchData]);
-      } catch {
-        matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
-      }
-    };
+  try {
+    const matchData = JSON.parse(ev.target.result);
+    matchContainer.innerHTML = "";
+    await afficherHistorique([matchData]);
+
+    // 🔥 Correction : stocker le match importé
+    window.importedMatch = matchData;
+  } catch {
+    matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
+  }
+};
+
     reader.readAsText(file);
   });
 
