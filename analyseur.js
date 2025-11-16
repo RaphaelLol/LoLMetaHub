@@ -186,33 +186,29 @@ function renderPlayerCell(p, matchId) {
 
 // ====== FONCTION VUE COACH ======
 function ouvrirVueCoach(matchId, puuid, teamId, role) {
-  // Récupérer le match depuis l'historique déjà chargé
   const match = (window.historyData || []).find(m => m.metadata.matchId === matchId);
-  if (!match) {
-    console.error("Match introuvable:", matchId);
-    return;
-  }
+  if (!match) return;
 
-  // Trouver le joueur
   const player = match.info.participants.find(p => p.puuid === puuid);
-  if (!player) {
-    console.error("Joueur introuvable:", puuid);
-    return;
-  }
+  if (!player) return;
 
-  // Trouver l’adversaire du même rôle
   const opponent = match.info.participants.find(p =>
     p.individualPosition === player.individualPosition && p.teamId !== player.teamId
   );
 
-  // Masquer la vue principale
+  // 🔥 Ajouter le fond du champion
+  const champName = player.championName;
+  const splashURL = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champName}_0.jpg`;
+  document.getElementById("coachBackground").style.backgroundImage = `url('${splashURL}')`;
+
+  // Afficher la vue coach
   document.getElementById("matchContainer").style.display = "none";
   document.getElementById("coachView").style.display = "block";
 
-  // Remplir la vue coach
   renderCoachHeader(player, match);
   renderCoachContent(player, opponent, match);
 }
+
 
 // ====== FERMER VUE COACH ======
 function fermerCoachView() {
