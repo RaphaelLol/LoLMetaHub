@@ -260,6 +260,15 @@ const survivalTimeTotal = match.info.gameDuration - deathTimeTotal;
 const survivalPerFight = (survivalTimeTotal / estimatedTeamfights).toFixed(1);
 
   
+// 🔢 Timeline des achats
+const itemEvents = match.info.timeline
+  ?.filter(e => e.participantId === player.participantId && e.type === "ITEM_PURCHASED")
+  .map(e => ({
+    itemId: e.itemId,
+    minute: Math.floor(e.timestamp / 60000),
+    icon: getItemImage(e.itemId)
+  })) || [];
+  
 
   document.getElementById("coachContent").innerHTML = `
     <div class="panel">
@@ -278,29 +287,45 @@ const survivalPerFight = (survivalTimeTotal / estimatedTeamfights).toFixed(1);
     </div>
 
     <!-- 👉 Nouveau bloc coaching -->
-    <div class="panel">
-      <h3>Stats avancées coaching</h3>
-      <p>
-        <strong>Kill Participation :</strong><br>
-        Définition : Pourcentage des kills de l’équipe où le joueur a participé (kills + assists).<br>
-        ➝ <span class="statValue">${killParticipation}%</span>
-      </p>
-      <p>
-        <strong>Damage Share :</strong><br>
-        Définition : Part des dégâts totaux de l’équipe infligés par le joueur.<br>
-        ➝ <span class="statValue">${damageShare}%</span>
-      </p>
-      <p>
-        <strong>Gold → Damage Efficiency :</strong><br>
-        Définition : Ratio entre les dégâts infligés et l’or gagné (efficacité économique).<br>
-        ➝ <span class="statValue">${goldEfficiency}</span>
-      </p>
-      <p>
-        <strong>Temps moyen de survie en teamfight :</strong><br>
-        Définition : Durée estimée pendant laquelle le joueur reste en vie après le début d’un teamfight.<br>
-        ➝ <span class="statValue">${survivalPerFight} secondes</span>
-  </p>   
-    </div>
+<div class="panel">
+  <h3>Stats avancées coaching</h3>
+  <p>
+    <strong>Kill Participation :</strong><br>
+    Définition : Pourcentage des kills de l’équipe où le joueur a participé (kills + assists).<br>
+    ➝ <span class="statValue">${killParticipation}%</span>
+  </p>
+  <p>
+    <strong>Damage Share :</strong><br>
+    Définition : Part des dégâts totaux de l’équipe infligés par le joueur.<br>
+    ➝ <span class="statValue">${damageShare}%</span>
+  </p>
+  <p>
+    <strong>Gold → Damage Efficiency :</strong><br>
+    Définition : Ratio entre les dégâts infligés et l’or gagné (efficacité économique).<br>
+    ➝ <span class="statValue">${goldEfficiency}</span>
+  </p>
+  <p>
+    <strong>Temps moyen de survie en teamfight :</strong><br>
+    Définition : Durée estimée pendant laquelle le joueur reste en vie après le début d’un teamfight.<br>
+    ➝ <span class="statValue">${survivalPerFight} secondes</span>
+  </p>  
+</div>
+
+<!-- 👉 Nouveau bloc timeline -->
+<div class="panel">
+  <h3>Timeline des achats</h3>
+  <div class="timeline">
+    ${itemEvents.map(e => `
+      <div class="timeline-entry">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-minute">Minute ${e.minute}</span>
+          <img src="${e.icon}" alt="item" class="item-icon">
+        </div>
+      </div>
+    `).join("")}
+  </div>
+</div>
   `;
 }
 
