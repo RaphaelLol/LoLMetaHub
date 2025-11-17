@@ -238,6 +238,21 @@ function renderCoachContent(player, opponent, match) {
   const visionPerMin = (player.visionScore / minutes).toFixed(2);
   const dpm = (player.totalDamageDealtToChampions / minutes).toFixed(1);
 
+  // 🔢 Calculs pour stats avancées
+  const teamTotalKills = match.info.participants
+    .filter(p => p.teamId === player.teamId)
+    .reduce((sum, p) => sum + p.kills, 0);
+
+  const killParticipation = (((player.kills + player.assists) / teamTotalKills) * 100).toFixed(1);
+
+  const teamTotalDamage = match.info.participants
+    .filter(p => p.teamId === player.teamId)
+    .reduce((sum, p) => sum + p.totalDamageDealtToChampions, 0);
+
+  const damageShare = ((player.totalDamageDealtToChampions / teamTotalDamage) * 100).toFixed(1);
+
+  const goldEfficiency = (player.totalDamageDealtToChampions / player.goldEarned).toFixed(2);
+
   document.getElementById("coachContent").innerHTML = `
     <div class="panel">
       <h3>Performance individuelle</h3>
@@ -247,10 +262,31 @@ function renderCoachContent(player, opponent, match) {
       <p>DPM: ${dpm}</p>
       <p>Vision Score: ${player.visionScore} (${visionPerMin}/min)</p>
     </div>
+
     <div class="panel">
       <h3>Comparaison avec l’adversaire (${opponent?.championName || "—"})</h3>
       <p>DPM adverse: ${opponent ? (opponent.totalDamageDealtToChampions / minutes).toFixed(1) : "—"}</p>
       <p>Vision adverse: ${opponent ? opponent.visionScore : "—"}</p>
+    </div>
+
+    <!-- 👉 Nouveau bloc coaching -->
+    <div class="panel">
+      <h3>Stats avancées coaching</h3>
+      <p>
+        <strong>Kill Participation :</strong><br>
+        Définition : Pourcentage des kills de l’équipe où le joueur a participé (kills + assists).<br>
+        ➝ <span class="statValue">${killParticipation}%</span>
+      </p>
+      <p>
+        <strong>Damage Share :</strong><br>
+        Définition : Part des dégâts totaux de l’équipe infligés par le joueur.<br>
+        ➝ <span class="statValue">${damageShare}%</span>
+      </p>
+      <p>
+        <strong>Gold → Damage Efficiency :</strong><br>
+        Définition : Ratio entre les dégâts infligés et l’or gagné (efficacité économique).<br>
+        ➝ <span class="statValue">${goldEfficiency}</span>
+      </p>
     </div>
   `;
 }
