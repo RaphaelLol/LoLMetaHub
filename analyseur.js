@@ -297,7 +297,7 @@ const survivalPerFight = (survivalTimeTotal / estimatedTeamfights).toFixed(1);
       </p>
       <p>
         <strong>Temps moyen de survie en teamfight :</strong><br>
-        Définition : Durée estimée pendant laquelle le joueur reste en vie après le début d’un combat d’équipe.<br>
+        Définition : Durée estimée pendant laquelle le joueur reste en vie après le début d’un teamfight.<br>
         ➝ <span class="statValue">${survivalPerFight} secondes</span>
   </p>   
     </div>
