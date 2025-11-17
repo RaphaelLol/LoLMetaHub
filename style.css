@@ -366,3 +366,54 @@ footer a:hover {
   font-size: 1.1em;
 }
 
+
+
+
+
+
+
+
+
+
+
+.timeline {
+  border-left: 2px solid #3498db;
+  margin-left: 20px;
+  padding-left: 10px;
+}
+
+.timeline-entry {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -11px;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: #3498db;
+  border-radius: 50%;
+}
+
+.timeline-content {
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.timeline-minute {
+  font-weight: bold;
+  color: #2c3e50;
+  margin-right: 8px;
+}
+
+.item-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+}
+
+
+
