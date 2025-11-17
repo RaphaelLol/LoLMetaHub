@@ -227,7 +227,7 @@ function renderCoachHeader(player, match) {
   const win = player.win ? "Victoire" : "Défaite";
   const durationMin = Math.round(match.info.gameDuration / 60);
   document.getElementById("coachHeader").innerHTML = `
-    <h2>${player.summonerName} — ${player.championName}</h2>
+    <h2>${player.championName} joué par ${playerDisplayName(player)}</h2>
     <p><strong>Résultat:</strong> ${win} | <strong>Durée:</strong> ${durationMin} min</p>
   `;
 }
