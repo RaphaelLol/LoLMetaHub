@@ -253,6 +253,14 @@ function renderCoachContent(player, opponent, match) {
 
   const goldEfficiency = (player.totalDamageDealtToChampions / player.goldEarned).toFixed(2);
 
+  // ➕ Nouveau calcul : Temps moyen de survie en teamfight
+const estimatedTeamfights = Math.max(1, Math.round(teamTotalKills / 4));
+const deathTimeTotal = player.totalTimeDead || (player.deaths * 30); // approx 30s par mort
+const survivalTimeTotal = match.info.gameDuration - deathTimeTotal;
+const survivalPerFight = (survivalTimeTotal / estimatedTeamfights).toFixed(1);
+
+  
+
   document.getElementById("coachContent").innerHTML = `
     <div class="panel">
       <h3>Performance individuelle</h3>
@@ -287,6 +295,11 @@ function renderCoachContent(player, opponent, match) {
         Définition : Ratio entre les dégâts infligés et l’or gagné (efficacité économique).<br>
         ➝ <span class="statValue">${goldEfficiency}</span>
       </p>
+      <p>
+        <strong>Temps moyen de survie en teamfight :</strong><br>
+        Définition : Durée estimée pendant laquelle le joueur reste en vie après le début d’un combat d’équipe.<br>
+        ➝ <span class="statValue">${survivalPerFight} secondes</span>
+  </p>   
     </div>
   `;
 }
