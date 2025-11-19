@@ -21,8 +21,8 @@ function getSummonerSpellImage(filename) {
   return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}`;
 }
 
-function getItemImage(id) {
-  return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png` : "";
+function getItemName(id) {
+  return window.itemData?.[id]?.name || `Item ${id}`;
 }
 
 function getChampionImage(name) {
@@ -266,7 +266,8 @@ const itemEvents = match.info.timeline
   .map(e => ({
     itemId: e.itemId,
     minute: Math.floor(e.timestamp / 60000),
-    icon: getItemImage(e.itemId)
+    icon: getItemImage(e.itemId),
+    name: getItemName(e.itemId)
   })) || [];
   
 
@@ -320,7 +321,8 @@ const itemEvents = match.info.timeline
         <div class="timeline-dot"></div>
         <div class="timeline-content">
           <span class="timeline-minute">Minute ${e.minute}</span>
-          <img src="${e.icon}" alt="item" class="item-icon">
+          <img src="${e.icon}" alt="${e.name}" class="item-icon">
+          <span class="timeline-name">${e.name}</span>
         </div>
       </div>
     `).join("")}
@@ -484,7 +486,7 @@ async function init() {
   let runesData = [];
   try {
     await chargerJSON("champions.json");
-    await chargerJSON("item.json");
+    window.itemData = await chargerJSON("item.json");
     runesData = await chargerJSON("runesReforged.json");
   } catch (e) {
     console.warn("Impossible de charger les assets locaux :", e);
