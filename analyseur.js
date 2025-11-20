@@ -21,9 +21,10 @@ function getSummonerSpellImage(filename) {
   return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/spell/${filename}`;
 }
 
-function getItemName(id) {
-  return window.itemData?.[id]?.name || `Item ${id}`;
+function getItemImage(id) {
+  return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png` : "";
 }
+
 
 function getChampionImage(name) {
   return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/champion/${name}.png`;
