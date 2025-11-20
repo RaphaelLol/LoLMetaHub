@@ -525,15 +525,19 @@ async function init() {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async ev => {
+  reader.onload = async ev => {
   try {
+    console.log("Match importé (brut) :", ev.target.result); // contenu texte du fichier
     const matchData = JSON.parse(ev.target.result);
+    console.log("Match importé (objet JS) :", matchData); // objet après parse
+
     matchContainer.innerHTML = "";
     await afficherHistorique([matchData]);
 
     // 🔥 Correction : stocker le match importé
     window.importedMatch = matchData;
-  } catch {
+  } catch (err) {
+    console.error("Erreur JSON :", err);
     matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
   }
 };
