@@ -499,18 +499,24 @@ async function init() {
     const reader = new FileReader();
   reader.onload = async ev => {
   try {
-    console.log("Match importé (brut) :", ev.target.result); // contenu texte du fichier
-    const matchData = JSON.parse(ev.target.result);
-    console.log("Match importé (objet JS) :", matchData); // objet après parse
+    const text = ev.target.result;
+    let matchData;
+    try {
+      matchData = JSON.parse(text);
+    } catch {
+      throw new Error("Le fichier n’est pas un JSON valide.");
+    }
+
+    if (!matchData.info || !matchData.metadata) {
+      throw new Error("Format inattendu : pas de champ info/metadata.");
+    }
 
     matchContainer.innerHTML = "";
     await afficherHistorique([matchData]);
-
-    // 🔥 Correction : stocker le match importé
     window.importedMatch = matchData;
   } catch (err) {
-    console.error("Erreur JSON :", err);
-    matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
+    console.error("Erreur d’import :", err);
+    matchContainer.innerHTML = `<p style='color:red;'>Erreur : ${err.message}</p>`;
   }
 };
 
@@ -527,7 +533,7 @@ async function init() {
       try {
         const parsed = JSON.parse(ev.target.result);
         if (Array.isArray(parsed)) {
-          historyData = parsed;
+          window.historyData = parsed;
           matchContainer.innerHTML = "<p>✅ Historique chargé. Recherchez un champion ci-dessus.</p>";
         } else {
           throw new Error("Format JSON inattendu : attendu un tableau");
