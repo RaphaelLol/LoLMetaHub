@@ -260,16 +260,7 @@ const deathTimeTotal = player.totalTimeDead || (player.deaths * 30); // approx 3
 const survivalTimeTotal = match.info.gameDuration - deathTimeTotal;
 const survivalPerFight = (survivalTimeTotal / estimatedTeamfights).toFixed(1);
 
-  
-// 🔢 Timeline des achats
-const itemEvents = match.info.timeline
-  ?.filter(e => e.participantId === player.participantId && e.type === "ITEM_PURCHASED")
-  .map(e => ({
-    itemId: e.itemId,
-    minute: Math.floor(e.timestamp / 60000),
-    icon: getItemImage(e.itemId),
-    name: getItemName(e.itemId)
-  })) || [];
+
   
 
   document.getElementById("coachContent").innerHTML = `
@@ -312,26 +303,6 @@ const itemEvents = match.info.timeline
     ➝ <span class="statValue">${survivalPerFight} secondes</span>
   </p>  
 </div>
-
-<!-- 👉 Nouveau bloc timeline -->
-<div class="panel">
-  <h3>Timeline des achats</h3>
-  <div class="timeline">
-    ${itemEvents.map(e => `
-      <div class="timeline-entry">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <span class="timeline-minute">Minute ${e.minute}</span>
-          <img src="${e.icon}" alt="${e.name}" class="item-icon">
-          <span class="timeline-name">${e.name}</span>
-        </div>
-      </div>
-    `).join("")}
-  </div>
-</div>
-  `;
-}
-
 
 
 
