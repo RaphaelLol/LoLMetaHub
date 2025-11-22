@@ -214,10 +214,12 @@ function renderPlayerCell(p, matchId) {
 }
 
 function renderItemTimeline(achats) {
-  let html = "<div class='panel'><h3>Timeline des achats</h3><ul>";
+  let html = "<div class='panel'><h3>Timeline des achats</h3><ul class='timelineList'>";
   achats.forEach(ev => {
+    const itemData = window.itemData?.[ev.itemId];
+    const itemName = itemData?.name || `Item ${ev.itemId}`;
     const itemURL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${ev.itemId}.png`;
-    html += `<li>[${ev.minute} min] <img src="${itemURL}" class="itemIcon" alt="${ev.itemId}"></li>`;
+    html += `<li><span class="minuteTag">[${ev.minute} min]</span> <img src="${itemURL}" class="itemIcon"> ${itemName}</li>`;
   });
   html += "</ul></div>";
   return html;
