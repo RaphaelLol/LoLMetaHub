@@ -25,7 +25,6 @@ function getItemImage(id) {
   return id ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png` : "";
 }
 
-
 function getChampionImage(name) {
   return `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/champion/${name}.png`;
 }
@@ -43,15 +42,12 @@ function getRuneImageById(id) {
 function formatKDA(p) {
   return `${p.kills}/${p.deaths}/${p.assists}`;
 }
-
 function formatCS(p) {
   return (p.totalMinionsKilled + p.neutralMinionsKilled);
 }
-
 function formatGold(p) {
   return p.goldEarned.toLocaleString();
 }
-
 function playerDisplayName(p) {
   return p.riotIdGameName ? `${p.riotIdGameName}#${p.riotIdTagline}` : (p.summonerName || "Inconnu");
 }
@@ -66,10 +62,9 @@ const SUMMONER_SPELLS = {
   11: "SummonerSmite.png",
   12: "SummonerTeleport.png",
   13: "SummonerMana.png",
-  14: "SummonerIgnite.png", // Ignite → cas spécial
+  14: "SummonerIgnite.png",
   21: "SummonerBarrier.png",
 };
-
 const SUMMONER_SPELL_DESCRIPTIONS = {
   "SummonerBoost.png": "Supprime les effets de contrôle et réduit ceux à venir.",
   "SummonerExhaust.png": "Réduit la vitesse et les dégâts de la cible.",
@@ -85,7 +80,6 @@ const SUMMONER_SPELL_DESCRIPTIONS = {
 
 // ====== ROLE ORDERING ======
 const ROLE_ORDER = ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"];
-
 function normalizeRole(pos) {
   const v = (pos || "").toUpperCase();
   if (ROLE_ORDER.includes(v)) return v;
@@ -188,9 +182,9 @@ function renderPlayerCell(p, matchId) {
 // ====== FONCTION VUE COACH ======
 function ouvrirVueCoach(matchId, puuid, teamId, role) {
   const match =
-    (window.historyData || []).find(m => m.metadata.matchId === matchId) ||
+    (window.historyData || []).find(m => m.metadata?.matchId === matchId) ||
     (window.importedMatch?.metadata?.matchId === matchId ? window.importedMatch : null);
-  
+
   if (!match) {
     console.warn("Match introuvable:", matchId);
     return;
@@ -203,31 +197,41 @@ function ouvrirVueCoach(matchId, puuid, teamId, role) {
     p.individualPosition === player.individualPosition && p.teamId !== player.teamId
   );
 
-  // 🔥 Ajouter le fond du champion
+  // Fond champion
   const champName = player.championName;
   const splashURL = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champName}_0.jpg`;
-  document.getElementById("coachBackground").style.backgroundImage = `url('${splashURL}')`;
+  const bg = document.getElementById("coachBackground");
+  if (bg) bg.style.backgroundImage = `url('${splashURL}')`;
 
   // Afficher la vue coach
-  document.getElementById("matchContainer").style.display = "none";
-  document.getElementById("coachView").style.display = "block";
+  const container = document.getElementById("matchContainer");
+  const coachView = document.getElementById("coachView");
+  if (container && coachView) {
+    container.style.display = "none";
+    coachView.style.display = "block";
+  }
 
   renderCoachHeader(player, match);
   renderCoachContent(player, opponent, match);
 }
 
-
 // ====== FERMER VUE COACH ======
 function fermerCoachView() {
-  document.getElementById("coachView").style.display = "none";
-  document.getElementById("matchContainer").style.display = "block";
+  const coachView = document.getElementById("coachView");
+  const container = document.getElementById("matchContainer");
+  if (coachView && container) {
+    coachView.style.display = "none";
+    container.style.display = "block";
+  }
 }
 
 // ====== RENDU HEADER ======
 function renderCoachHeader(player, match) {
   const win = player.win ? "Victoire" : "Défaite";
   const durationMin = Math.round(match.info.gameDuration / 60);
-  document.getElementById("coachHeader").innerHTML = `
+  const header = document.getElementById("coachHeader");
+  if (!header) return;
+  header.innerHTML = `
     <h2>${player.championName} joué par ${playerDisplayName(player)}</h2>
     <p><strong>Résultat:</strong> ${win} | <strong>Durée:</strong> ${durationMin} min</p>
   `;
@@ -239,31 +243,35 @@ function renderCoachContent(player, opponent, match) {
   const visionPerMin = (player.visionScore / minutes).toFixed(2);
   const dpm = (player.totalDamageDealtToChampions / minutes).toFixed(1);
 
-  // 🔢 Calculs pour stats avancées
   const teamTotalKills = match.info.participants
     .filter(p => p.teamId === player.teamId)
     .reduce((sum, p) => sum + p.kills, 0);
 
-  const killParticipation = (((player.kills + player.assists) / teamTotalKills) * 100).toFixed(1);
+  const killParticipation = teamTotalKills > 0
+    ? (((player.kills + player.assists) / teamTotalKills) * 100).toFixed(1)
+    : "0.0";
 
   const teamTotalDamage = match.info.participants
     .filter(p => p.teamId === player.teamId)
     .reduce((sum, p) => sum + p.totalDamageDealtToChampions, 0);
 
-  const damageShare = ((player.totalDamageDealtToChampions / teamTotalDamage) * 100).toFixed(1);
+  const damageShare = teamTotalDamage > 0
+    ? ((player.totalDamageDealtToChampions / teamTotalDamage) * 100).toFixed(1)
+    : "0.0";
 
-  const goldEfficiency = (player.totalDamageDealtToChampions / player.goldEarned).toFixed(2);
+  const goldEfficiency = player.goldEarned > 0
+    ? (player.totalDamageDealtToChampions / player.goldEarned).toFixed(2)
+    : "0.00";
 
-  // ➕ Nouveau calcul : Temps moyen de survie en teamfight
-const estimatedTeamfights = Math.max(1, Math.round(teamTotalKills / 4));
-const deathTimeTotal = player.totalTimeDead || (player.deaths * 30); // approx 30s par mort
-const survivalTimeTotal = match.info.gameDuration - deathTimeTotal;
-const survivalPerFight = (survivalTimeTotal / estimatedTeamfights).toFixed(1);
+  const estimatedTeamfights = Math.max(1, Math.round(teamTotalKills / 4));
+  const deathTimeTotal = player.totalTimeDead || (player.deaths * 30);
+  const survivalTimeTotal = Math.max(0, match.info.gameDuration - deathTimeTotal);
+  const survivalPerFight = (survivalTimeTotal / estimatedTeamfights).toFixed(1);
 
+  const content = document.getElementById("coachContent");
+  if (!content) return;
 
-  
-
-  document.getElementById("coachContent").innerHTML = `
+  content.innerHTML = `
     <div class="panel">
       <h3>Performance individuelle</h3>
       <p>KDA: ${player.kills}/${player.deaths}/${player.assists}</p>
@@ -279,69 +287,46 @@ const survivalPerFight = (survivalTimeTotal / estimatedTeamfights).toFixed(1);
       <p>Vision adverse: ${opponent ? opponent.visionScore : "—"}</p>
     </div>
 
-    <!-- 👉 Nouveau bloc coaching -->
-<div class="panel">
-  <h3>Stats avancées coaching</h3>
-  <p>
-    <strong>Kill Participation :</strong><br>
-    Définition : Pourcentage des kills de l’équipe où le joueur a participé (kills + assists).<br>
-    ➝ <span class="statValue">${killParticipation}%</span>
-  </p>
-  <p>
-    <strong>Damage Share :</strong><br>
-    Définition : Part des dégâts totaux de l’équipe infligés par le joueur.<br>
-    ➝ <span class="statValue">${damageShare}%</span>
-  </p>
-  <p>
-    <strong>Gold → Damage Efficiency :</strong><br>
-    Définition : Ratio entre les dégâts infligés et l’or gagné (efficacité économique).<br>
-    ➝ <span class="statValue">${goldEfficiency}</span>
-  </p>
-  <p>
-    <strong>Temps moyen de survie en teamfight :</strong><br>
-    Définition : Durée estimée pendant laquelle le joueur reste en vie après le début d’un teamfight.<br>
-    ➝ <span class="statValue">${survivalPerFight} secondes</span>
-  </p>  
-</div>
-
-
+    <div class="panel">
+      <h3>Stats avancées coaching</h3>
+      <p><strong>Kill Participation :</strong><br>➝ <span class="statValue">${killParticipation}%</span></p>
+      <p><strong>Damage Share :</strong><br>➝ <span class="statValue">${damageShare}%</span></p>
+      <p><strong>Gold → Damage Efficiency :</strong><br>➝ <span class="statValue">${goldEfficiency}</span></p>
+      <p><strong>Temps moyen de survie en teamfight :</strong><br>➝ <span class="statValue">${survivalPerFight} secondes</span></p>
+    </div>
+  `;
+}
 
 // ====== ROW FACE-À-FACE ======
 function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKillsBlue, teamTotalKillsRed, match) {
-  const leftColor = "#3498db"; // bleu
-  const rightColor = "#e74c3c"; // rouge
+  const leftColor = "#3498db";
+  const rightColor = "#e74c3c";
 
-  // ⚠️ Correction : on passe bien match.metadata.matchId à renderPlayerCell
   const leftCell = leftP ? renderPlayerCell(leftP, match.metadata.matchId) : "<div class='playerCell'>—</div>";
   const rightCell = rightP ? renderPlayerCell(rightP, match.metadata.matchId) : "<div class='playerCell'>—</div>";
 
-  // Stats classiques côté bleu
   const leftStats = leftP
     ? `
       <div><strong>KDA:</strong> ${formatKDA(leftP)}</div>
       <div><strong>Gold:</strong> ${formatGold(leftP)}</div>
       <div><strong>CS:</strong> ${formatCS(leftP)}</div>
       <div><strong>Vision Score:</strong> ${leftP.visionScore}</div>
-
       ${createDamageBar(leftP, leftMaxDmg, leftColor)}
       ${renderItems(leftP)}
     `
     : "<div>—</div>";
 
-  // Stats classiques côté rouge
   const rightStats = rightP
     ? `
       <div><strong>KDA:</strong> ${formatKDA(rightP)}</div>
       <div><strong>Gold:</strong> ${formatGold(rightP)}</div>
       <div><strong>CS:</strong> ${formatCS(rightP)}</div>
       <div><strong>Vision Score:</strong> ${rightP.visionScore}</div>
-
       ${createDamageBar(rightP, rightMaxDmg, rightColor)}
       ${renderItems(rightP)}
     `
     : "<div>—</div>";
 
-  // Retourne la ligne complète avec 7 colonnes
   return `
     <tr>
       <td>${renderAdvancedStats(leftP, match, teamTotalKillsBlue)}</td>
@@ -355,32 +340,22 @@ function renderFaceToFaceRow(leftP, rightP, leftMaxDmg, rightMaxDmg, teamTotalKi
   `;
 }
 
-
 // ====== MATCH RENDER (face à face) ======
 function renderMatchFaceAFace(match) {
   const players = match.info.participants || [];
   const blue = players.filter(p => p.teamId === 100);
   const red = players.filter(p => p.teamId === 200);
 
-  // max damage par équipe pour échelle des barres
   const leftMax = Math.max(...blue.map(p => p.totalDamageDealtToChampions), 0);
   const rightMax = Math.max(...red.map(p => p.totalDamageDealtToChampions), 0);
 
-  // 👉 Calcul des kills totaux par équipe
   const teamTotalKillsBlue = blue.reduce((sum, p) => sum + p.kills, 0);
   const teamTotalKillsRed = red.reduce((sum, p) => sum + p.kills, 0);
 
-  // Map rôle -> joueur
   const blueByRole = {};
   const redByRole = {};
-  blue.forEach(p => {
-    const role = normalizeRole(p.teamPosition);
-    blueByRole[role] = p;
-  });
-  red.forEach(p => {
-    const role = normalizeRole(p.teamPosition);
-    redByRole[role] = p;
-  });
+  blue.forEach(p => { blueByRole[normalizeRole(p.teamPosition)] = p; });
+  red.forEach(p => { redByRole[normalizeRole(p.teamPosition)] = p; });
 
   const durationMin = Math.floor((match.info.gameDuration || 0) / 60);
   const blueWin = (players.find(p => p.teamId === 100)?.win) === true;
@@ -388,12 +363,9 @@ function renderMatchFaceAFace(match) {
 
   let rows = "";
   ROLE_ORDER.forEach(role => {
-    const leftP = blueByRole[role];
-    const rightP = redByRole[role];
-    // ⚠️ Correction : on passe bien match.metadata.matchId à renderFaceToFaceRow
     rows += renderFaceToFaceRow(
-      leftP,
-      rightP,
+      blueByRole[role],
+      redByRole[role],
       leftMax,
       rightMax,
       teamTotalKillsBlue,
@@ -406,18 +378,12 @@ function renderMatchFaceAFace(match) {
     <div class="matchBlock">
       <h2 class="matchHeader">Partie — ${durationMin}m</h2>
       <div class="teamLabelRow">
-        <div class="teamLabel ${blueWin ? "victory" : "defeat"}">
-          Équipe bleue: ${blueWin ? "Victoire" : "Défaite"}
-        </div>
+        <div class="teamLabel ${blueWin ? "victory" : "defeat"}">Équipe bleue: ${blueWin ? "Victoire" : "Défaite"}</div>
         <div class="teamSpacer">vs</div>
-        <div class="teamLabel ${redWin ? "victory" : "defeat"}">
-          Équipe rouge: ${redWin ? "Victoire" : "Défaite"}
-        </div>
+        <div class="teamLabel ${redWin ? "victory" : "defeat"}">Équipe rouge: ${redWin ? "Victoire" : "Défaite"}</div>
       </div>
       <table class="matchTable">
-        <colgroup>
-          <col><col><col><col><col><col><col>
-        </colgroup>
+        <colgroup><col><col><col><col><col><col><col></colgroup>
         <thead>
           <tr>
             <th>Stats avancées (bleu)</th>
@@ -429,26 +395,31 @@ function renderMatchFaceAFace(match) {
             <th>Stats avancées (rouge)</th>
           </tr>
         </thead>
-        <tbody>
-          ${rows}
-        </tbody>
+        <tbody>${rows}</tbody>
       </table>
     </div>
   `;
 }
 
-
 // ====== HISTORIQUE ======
 async function afficherHistorique(matches) {
   const container = document.getElementById("matchContainer");
+  if (!container) {
+    console.error("matchContainer introuvable dans le DOM.");
+    return;
+  }
   container.innerHTML = "";
 
-  if (!matches.length) {
+  if (!matches?.length) {
     container.innerHTML = "<p>Aucun match trouvé.</p>";
     return;
   }
 
   matches.forEach(match => {
+    if (!match?.info?.participants || !match?.metadata?.matchId) {
+      container.innerHTML += "<p style='color:red;'>Match invalide (info/metadata manquants).</p>";
+      return;
+    }
     container.innerHTML += renderMatchFaceAFace(match);
   });
 }
@@ -457,6 +428,7 @@ async function afficherHistorique(matches) {
 async function init() {
   let runesData = [];
   try {
+    // Si assets hébergés sur GitHub Pages, tu peux mettre des URLs absolues ici si besoin.
     await chargerJSON("champions.json");
     window.itemData = await chargerJSON("item.json");
     runesData = await chargerJSON("runesReforged.json");
@@ -466,14 +438,10 @@ async function init() {
 
   try {
     runesData.forEach(style => {
-      if (style.id && style.icon) {
-        RUNE_ICON_MAP[style.id] = style.icon;
-      }
+      if (style.id && style.icon) RUNE_ICON_MAP[style.id] = style.icon;
       style.slots?.forEach(slot => {
         slot.runes?.forEach(rune => {
-          if (rune.id && rune.icon) {
-            RUNE_ICON_MAP[rune.id] = rune.icon;
-          }
+          if (rune.id && rune.icon) RUNE_ICON_MAP[rune.id] = rune.icon;
         });
       });
     });
@@ -490,74 +458,80 @@ async function init() {
   const searchBtn = document.getElementById("searchBtn");
 
   window.historyData = [];
-  
+
   // Import d'une seule partie
-  importBtn?.addEventListener("click", () => importInput.click());
-  importInput?.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-  reader.onload = async ev => {
-  try {
-    const text = ev.target.result;
-    let matchData;
-    try {
-      matchData = JSON.parse(text);
-    } catch {
-      throw new Error("Le fichier n’est pas un JSON valide.");
-    }
-
-    if (!matchData.info || !matchData.metadata) {
-      throw new Error("Format inattendu : pas de champ info/metadata.");
-    }
-
-    matchContainer.innerHTML = "";
-    await afficherHistorique([matchData]);
-    window.importedMatch = matchData;
-  } catch (err) {
-    console.error("Erreur d’import :", err);
-    matchContainer.innerHTML = `<p style='color:red;'>Erreur : ${err.message}</p>`;
+  if (importBtn && importInput) {
+    importBtn.addEventListener("click", () => importInput.click());
+    importInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async ev => {
+        try {
+          const text = ev.target.result;
+          let matchData;
+          try {
+            matchData = JSON.parse(text);
+          } catch {
+            throw new Error("Le fichier n’est pas un JSON valide.");
+          }
+          if (!matchData.info || !matchData.metadata) {
+            throw new Error("Format inattendu : champs info/metadata absents.");
+          }
+          matchContainer.innerHTML = "";
+          await afficherHistorique([matchData]);
+          window.importedMatch = matchData;
+        } catch (err) {
+          console.error("Erreur d’import :", err);
+          matchContainer.innerHTML = `<p style='color:red;'>Erreur : ${err.message}</p>`;
+        }
+      };
+      reader.readAsText(file);
+    });
+  } else {
+    console.warn("Bouton ou input d'import de match introuvable (#importBtn, #importInput).");
   }
-};
-
-    reader.readAsText(file);
-  });
 
   // Import de l'historique
-  importHistoryBtn?.addEventListener("click", () => importHistoryInput.click());
-  importHistoryInput?.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try {
-        const parsed = JSON.parse(ev.target.result);
-        if (Array.isArray(parsed)) {
-          window.historyData = parsed;
-          matchContainer.innerHTML = "<p>✅ Historique chargé. Recherchez un champion ci-dessus.</p>";
-        } else {
-          throw new Error("Format JSON inattendu : attendu un tableau");
+  if (importHistoryBtn && importHistoryInput) {
+    importHistoryBtn.addEventListener("click", () => importHistoryInput.click());
+    importHistoryInput.addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const parsed = JSON.parse(ev.target.result);
+          if (Array.isArray(parsed)) {
+            window.historyData = parsed; // correction
+            matchContainer.innerHTML = "<p>✅ Historique chargé. Recherchez un champion ci-dessus.</p>";
+          } else {
+            throw new Error("Format JSON inattendu : attendu un tableau.");
+          }
+        } catch (err) {
+          matchContainer.innerHTML = `<p style='color:red;'>Erreur : ${err.message}</p>`;
         }
-      } catch {
-        matchContainer.innerHTML = "<p style='color:red;'>Erreur : fichier JSON invalide.</p>";
-      }
-    };
-    reader.readAsText(file);
-  });
+      };
+      reader.readAsText(file);
+    });
+  } else {
+    console.warn("Bouton ou input d'import d'historique introuvable (#importHistoryBtn, #importHistoryInput).");
+  }
 
   // Recherche par champion
-  searchBtn?.addEventListener("click", () => {
-    const champName = (searchInput.value || "").trim().toLowerCase();
-    if (!historyData.length) {
-      matchContainer.innerHTML = "<p style='color:red;'>⚠️ Aucun historique chargé !</p>";
-      return;
-    }
-    const filteredMatches = historyData.filter(m =>
-      (m.info?.participants || []).some(p => (p.championName || "").toLowerCase() === champName)
-    );
-    afficherHistorique(filteredMatches);
-  });
+  if (searchBtn && searchInput) {
+    searchBtn.addEventListener("click", () => {
+      const champName = (searchInput.value || "").trim().toLowerCase();
+      if (!window.historyData.length) {
+        matchContainer.innerHTML = "<p style='color:red;'>⚠️ Aucun historique chargé !</p>";
+        return;
+      }
+      const filteredMatches = window.historyData.filter(m =>
+        (m.info?.participants || []).some(p => (p.championName || "").toLowerCase() === champName)
+      );
+      afficherHistorique(filteredMatches);
+    });
+  }
 }
 
 init();
-
