@@ -232,8 +232,9 @@ function renderPlayerCell(p, matchId) {
 }
 
 function renderItemTimeline(achats) {
-  // Regrouper les achats par minute
   const grouped = {};
+
+  // Regrouper les items par minute
   achats.forEach(ev => {
     const min = ev.minute;
     if (!grouped[min]) grouped[min] = [];
@@ -242,27 +243,24 @@ function renderItemTimeline(achats) {
 
   let html = "<div class='panel'><h3>Timeline des achats</h3><div class='timeline'>";
 
-  // Afficher chaque minute une seule fois
   Object.entries(grouped).forEach(([minute, itemIds]) => {
     html += `
       <div class="timeline-entry">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content">
-          <span class="timeline-minute">[${minute} min]</span>
+        <div class="timeline-header">[${minute} min]</div>
+        <div class="timeline-items">
     `;
 
-    // Afficher tous les items achetés à cette minute
     itemIds.forEach(id => {
       const itemData = window.itemData?.[id.toString()];
       const itemName = itemData?.name || `Item ${id}`;
       const itemURL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png`;
 
       html += `
-  <div class="item-block">
-    <img src="${itemURL}" class="item-icon" alt="${itemName}" title="${itemName}">
-    <span class="item-name">${itemName}</span>
-  </div>
-`;
+        <div class="item-block">
+          <img src="${itemURL}" class="item-icon" alt="${itemName}" title="${itemName}">
+          <span class="item-name">${itemName}</span>
+        </div>
+      `;
     });
 
     html += "</div></div>";
