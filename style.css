@@ -398,17 +398,20 @@ footer a:hover {
 }
 
 .timeline-content {
-  margin-left: 15px;
   display: flex;
   align-items: center;
-  font-size: 1.1em;                /* texte plus grand */
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: 10px;
 }
+
 
 .timeline-minute {
   font-weight: bold;
   color: #2c3e50;
   margin-right: 12px;
-  font-size: 1.1em;                /* minutes plus visibles */
+  font-size: 1.1em;
+  min-width: 70px;
 }
 
 .timeline-name {
@@ -419,12 +422,15 @@ footer a:hover {
 
 
 .item-icon {
-  width: 40px;                     /* icône plus grande */
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 6px;
-  margin-right: 10px;
+  transition: transform 0.2s ease;
 }
 
+.item-icon:hover {
+  transform: scale(1.1);
+}
 
 
 
