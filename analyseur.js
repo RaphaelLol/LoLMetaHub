@@ -9,6 +9,19 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
+async function fetchTimeline(matchId) {
+  const REGION = "europe"; // adapte selon ton serveur (americas, asia, europe)
+  const API_KEY = "RGAPI-78c7a072-b216-416f-88f2-d8e948065852"; // ta clé API Riot
+
+  const url = `https://${REGION}.api.riotgames.com/lol/match/v5/matches/${matchId}/timeline`;
+  const res = await fetch(url, {
+    headers: { "X-Riot-Token": API_KEY }
+  });
+  if (!res.ok) throw new Error("Erreur API Riot: " + res.status);
+  return await res.json();
+}
+
+
 function getSummonerSpellImage(filename) {
   if (!filename) return "";
 
@@ -129,6 +142,27 @@ function renderItems(p) {
   return `<div class="itemsCell">${itemsHTML.join("")}</div>`;
 }
 
+
+// ====== FONCTION TIMELINE ======
+function extractPurchasesForPlayer(timeline, puuid) {
+  const achats = [];
+  timeline.info.frames.forEach(frame => {
+    frame.events.forEach(ev => {
+      if (ev.type === "ITEM_PURCHASED") {
+        const playerFrame = timeline.info.participants.find(p => p.participantId === ev.participantId);
+        if (playerFrame && playerFrame.puuid === puuid) {
+          achats.push({
+            minute: Math.floor(ev.timestamp / 60000),
+            itemId: ev.itemId
+          });
+        }
+      }
+    });
+  });
+  return achats;
+}
+
+
 // ====== ADVANCED STATS (bloc latéral) ======
 function renderAdvancedStats(p, match, teamTotalKills) {
   if (!p) return "<div class='advancedStats'>—</div>";
@@ -178,6 +212,17 @@ function renderPlayerCell(p, matchId) {
     </div>
   `;
 }
+
+function renderItemTimeline(achats) {
+  let html = "<div class='panel'><h3>Timeline des achats</h3><ul>";
+  achats.forEach(ev => {
+    const itemURL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${ev.itemId}.png`;
+    html += `<li>[${ev.minute} min] <img src="${itemURL}" class="itemIcon" alt="${ev.itemId}"></li>`;
+  });
+  html += "</ul></div>";
+  return html;
+}
+
 
 // ====== FONCTION VUE COACH ======
 function ouvrirVueCoach(matchId, puuid, teamId, role) {
@@ -238,7 +283,7 @@ function renderCoachHeader(player, match) {
 }
 
 // ====== RENDU CONTENU ======
-function renderCoachContent(player, opponent, match) {
+async function renderCoachContent(player, opponent, match) {
   const minutes = Math.max(1, Math.round(match.info.gameDuration / 60));
   const visionPerMin = (player.visionScore / minutes).toFixed(2);
   const dpm = (player.totalDamageDealtToChampions / minutes).toFixed(1);
@@ -295,6 +340,15 @@ function renderCoachContent(player, opponent, match) {
       <p><strong>Temps moyen de survie en teamfight :</strong><br>➝ <span class="statValue">${survivalPerFight} secondes</span></p>
     </div>
   `;
+ // ➕ Ajout du bloc timeline
+  try {
+    const timeline = await fetchTimeline(match.metadata.matchId);
+    const achats = extractPurchasesForPlayer(timeline, player.puuid);
+    content.innerHTML += renderItemTimeline(achats);
+  } catch (err) {
+    console.error("Impossible de récupérer la timeline :", err);
+    content.innerHTML += "<p style='color:red;'>Timeline indisponible.</p>";
+  }
 }
 
 // ====== ROW FACE-À-FACE ======
