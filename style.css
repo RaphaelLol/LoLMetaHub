@@ -377,14 +377,17 @@ footer a:hover {
 
 
 .timeline {
-  border-left: 3px solid #3498db; /* ligne plus épaisse */
-  margin-left: 30px;              /* plus d’espace */
-  padding-left: 20px;             /* contenu plus aéré */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px;
 }
 
 .timeline-entry {
-  position: relative;
-  margin-bottom: 25px;            /* plus d’espace entre les entrées */
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .timeline-dot {
@@ -422,8 +425,8 @@ footer a:hover {
 
 
 .item-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 6px;
   transition: transform 0.2s ease;
 }
@@ -432,12 +435,11 @@ footer a:hover {
   transform: scale(1.1);
 }
 
-
 .item-block {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 60px;
+  width: 64px;
 }
 
 .item-name {
@@ -446,5 +448,19 @@ footer a:hover {
   color: #555;
   margin-top: 4px;
   word-break: break-word;
+}
+
+
+.timeline-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.timeline-header {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #2c3e50;
+  margin-bottom: 8px;
 }
 
