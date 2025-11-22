@@ -14,7 +14,8 @@ async function chargerItemData() {
   const url = `https://ddragon.leagueoflegends.com/cdn/${patch}/data/fr_FR/item.json`;
   const res = await fetch(url);
   const data = await res.json();
-  window.itemData = (await chargerJSON("item.json")).data;
+  const itemFile = await chargerJSON("item.json");
+  window.itemData = itemFile.data;
   console.log("Items chargés :", window.itemData);
 }
 // Fonction de démarrage
@@ -512,7 +513,8 @@ async function init() {
   try {
     // Si assets hébergés sur GitHub Pages, tu peux mettre des URLs absolues ici si besoin.
     await chargerJSON("champions.json");
-    window.itemData = await chargerJSON("item.json");
+    const itemFile = await chargerJSON("item.json");
+    window.itemData = itemFile.data;
     runesData = await chargerJSON("runesReforged.json");
   } catch (e) {
     console.warn("Impossible de charger les assets locaux :", e);
