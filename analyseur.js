@@ -9,6 +9,15 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
+async function chargerItemData() {
+  const patch = DDRAGON_PATCH; // exemple: "13.22.1"
+  const url = `https://ddragon.leagueoflegends.com/cdn/${patch}/data/fr_FR/item.json`;
+  const res = await fetch(url);
+  const data = await res.json();
+  window.itemData = data.data;
+}
+
+
 async function fetchTimeline(matchId) {
   const REGION = "europe"; // adapte selon ton serveur (americas, asia, europe)
   const API_KEY = "RGAPI-78c7a072-b216-416f-88f2-d8e948065852"; // ta clé API Riot
@@ -234,7 +243,6 @@ function renderItemTimeline(achats) {
   html += "</div></div>";
   return html;
 }
-
 
 // ====== FONCTION VUE COACH ======
 function ouvrirVueCoach(matchId, puuid, teamId, role) {
