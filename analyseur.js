@@ -14,7 +14,7 @@ async function chargerItemData() {
   const url = `https://ddragon.leagueoflegends.com/cdn/${patch}/data/fr_FR/item.json`;
   const res = await fetch(url);
   const data = await res.json();
-  window.itemData = data.data;
+  window.itemData = (await chargerJSON("item.json")).data;
   console.log("Items chargés :", window.itemData);
 }
 // Fonction de démarrage
