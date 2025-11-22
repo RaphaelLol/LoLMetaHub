@@ -10,7 +10,7 @@ async function chargerJSON(url) {
 }
 
 async function chargerItemData() {
-  const patch = DDRAGON_PATCH; // exemple: "13.22.1"
+  const patch = DDRAGON_PATCH || "25.23"; // adapte selon ton patch
   const url = `https://ddragon.leagueoflegends.com/cdn/${patch}/data/fr_FR/item.json`;
   const res = await fetch(url);
   const data = await res.json();
@@ -225,7 +225,7 @@ function renderPlayerCell(p, matchId) {
 function renderItemTimeline(achats) {
   let html = "<div class='panel'><h3>Timeline des achats</h3><div class='timeline'>";
   achats.forEach(ev => {
-    const itemData = window.itemData?.[ev.itemId];
+    const itemData = window.itemData?.[ev.itemId.toString()]
     const itemName = itemData?.name || `Item ${ev.itemId}`;
     const itemURL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${ev.itemId}.png`;
 
