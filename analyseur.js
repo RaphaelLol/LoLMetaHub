@@ -15,8 +15,16 @@ async function chargerItemData() {
   const res = await fetch(url);
   const data = await res.json();
   window.itemData = data.data;
+  console.log("Items chargés :", window.itemData);
+}
+// Fonction de démarrage
+async function init() {
+  await chargerItemData();
+  // tu peux aussi mettre d’autres initialisations ici si besoin
 }
 
+// Lancer init quand la page est prête
+document.addEventListener("DOMContentLoaded", init);
 
 async function fetchTimeline(matchId) {
   const REGION = "europe"; // adapte selon ton serveur (americas, asia, europe)
