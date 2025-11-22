@@ -10,7 +10,7 @@ async function chargerJSON(url) {
 }
 
 async function chargerItemData() {
-  const patch = DDRAGON_PATCH || "25.23"; // adapte selon ton patch
+  const patch = DDRAGON_PATCH || "15.22.1"; // adapte selon ton patch
   const url = `https://ddragon.leagueoflegends.com/cdn/${patch}/data/fr_FR/item.json`;
   const res = await fetch(url);
   const data = await res.json();
