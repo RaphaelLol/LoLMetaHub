@@ -258,8 +258,11 @@ function renderItemTimeline(achats) {
       const itemURL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png`;
 
       html += `
-        <img src="${itemURL}" class="item-icon" alt="${itemName}" title="${itemName}">
-      `;
+  <div class="item-block">
+    <img src="${itemURL}" class="item-icon" alt="${itemName}" title="${itemName}">
+    <span class="item-name">${itemName}</span>
+  </div>
+`;
     });
 
     html += "</div></div>";
