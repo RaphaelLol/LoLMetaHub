@@ -232,23 +232,39 @@ function renderPlayerCell(p, matchId) {
 }
 
 function renderItemTimeline(achats) {
-  let html = "<div class='panel'><h3>Timeline des achats</h3><div class='timeline'>";
+  // Regrouper les achats par minute
+  const grouped = {};
   achats.forEach(ev => {
-    const itemData = window.itemData?.[ev.itemId.toString()]
-    const itemName = itemData?.name || `Item ${ev.itemId}`;
-    const itemURL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${ev.itemId}.png`;
+    const min = ev.minute;
+    if (!grouped[min]) grouped[min] = [];
+    grouped[min].push(ev.itemId);
+  });
 
+  let html = "<div class='panel'><h3>Timeline des achats</h3><div class='timeline'>";
+
+  // Afficher chaque minute une seule fois
+  Object.entries(grouped).forEach(([minute, itemIds]) => {
     html += `
       <div class="timeline-entry">
         <div class="timeline-dot"></div>
         <div class="timeline-content">
-          <span class="timeline-minute">[${ev.minute} min]</span>
-          <img src="${itemURL}" class="item-icon" alt="${itemName}">
-          <span class="timeline-name">${itemName}</span>
-        </div>
-      </div>
+          <span class="timeline-minute">[${minute} min]</span>
     `;
+
+    // Afficher tous les items achetés à cette minute
+    itemIds.forEach(id => {
+      const itemData = window.itemData?.[id.toString()];
+      const itemName = itemData?.name || `Item ${id}`;
+      const itemURL = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_PATCH}/img/item/${id}.png`;
+
+      html += `
+        <img src="${itemURL}" class="item-icon" alt="${itemName}" title="${itemName}">
+      `;
+    });
+
+    html += "</div></div>";
   });
+
   html += "</div></div>";
   return html;
 }
