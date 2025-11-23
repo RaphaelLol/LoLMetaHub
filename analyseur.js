@@ -40,16 +40,22 @@ async function fetchTimeline(matchId) {
   return await res.json();
 }
 
-function afficherTooltip(itemId, event) {
-  const item = window.itemData?.[itemId.toString()];
-  if (!item) return;
-
+function afficherTooltip(id, event) {
   const tooltip = document.getElementById("itemTooltip");
-  tooltip.innerHTML = `
-    <strong>${item.name}</strong><br>
-    ${item.plaintext || ""}<br>
-    <em>Coût: ${item.gold?.total}g</em>
-  `;
+  if (!tooltip) return;
+
+  let html = "";
+  const item = window.itemData?.[id.toString()];
+  if (item) {
+    html = `<strong>${item.name}</strong><br>${item.plaintext || ""}<br><em>Coût: ${item.gold?.total}g</em>`;
+  } else if (window.runeData?.[id]) {
+    const rune = window.runeData[id];
+    html = `<strong>${rune.name}</strong><br>${rune.shortDesc}`;
+  } else {
+    html = `ID ${id}`;
+  }
+
+  tooltip.innerHTML = html;
   tooltip.style.display = "block";
   tooltip.style.left = event.pageX + 12 + "px";
   tooltip.style.top = event.pageY + 12 + "px";
@@ -57,9 +63,8 @@ function afficherTooltip(itemId, event) {
 
 function cacherTooltip() {
   const tooltip = document.getElementById("itemTooltip");
-  tooltip.style.display = "none";
+  if (tooltip) tooltip.style.display = "none";
 }
-
 
 function getSummonerSpellImage(filename) {
   if (!filename) return "";
@@ -179,15 +184,15 @@ function renderItems(p) {
   for (let i = 0; i <= 6; i++) {
     const id = p[`item${i}`];
     if (id) {
-  itemsHTML.push(`
-    <img class="itemIcon" src="${getItemImage(id)}" alt=""
-         onmouseover="afficherTooltip(${id}, event)"
-         onmouseout="cacherTooltip()">
-  `);
-}
+      itemsHTML.push(`
+        <img class="itemIcon" src="${getItemImage(id)}" alt=""
+             onmouseover="afficherTooltip(${id}, event)"
+             onmouseout="cacherTooltip()">
+      `);
+    }
+  }
   return `<div class="itemsCell">${itemsHTML.join("")}</div>`;
 }
-  }
 
 
 // ====== FONCTION TIMELINE ======
