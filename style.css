@@ -464,3 +464,17 @@ footer a:hover {
   margin-bottom: 8px;
 }
 
+#itemTooltip {
+  position: absolute;
+  background: #1c1c1c;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.85em;
+  max-width: 220px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 1000;
+  pointer-events: none;
+}
+
