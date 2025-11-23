@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", init);
 
 async function fetchTimeline(matchId) {
   const REGION = "europe"; // adapte selon ton serveur (americas, asia, europe)
-  const API_KEY = "RGAPI-f0a9d984-7025-4828-927c-78d2dc5a5818"; // ta clé API Riot
+  const API_KEY = "RGAPI-"; // ta clé API Riot
 
   const url = `https://${REGION}.api.riotgames.com/lol/match/v5/matches/${matchId}/timeline`;
   const res = await fetch(url, {
