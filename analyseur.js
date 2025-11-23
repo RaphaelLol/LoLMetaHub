@@ -39,6 +39,26 @@ async function fetchTimeline(matchId) {
   return await res.json();
 }
 
+function afficherTooltip(itemId, event) {
+  const item = window.itemData?.[itemId.toString()];
+  if (!item) return;
+
+  const tooltip = document.getElementById("itemTooltip");
+  tooltip.innerHTML = `
+    <strong>${item.name}</strong><br>
+    ${item.plaintext || ""}<br>
+    <em>Coût: ${item.gold?.total}g</em>
+  `;
+  tooltip.style.display = "block";
+  tooltip.style.left = event.pageX + 12 + "px";
+  tooltip.style.top = event.pageY + 12 + "px";
+}
+
+function cacherTooltip() {
+  const tooltip = document.getElementById("itemTooltip");
+  tooltip.style.display = "none";
+}
+
 
 function getSummonerSpellImage(filename) {
   if (!filename) return "";
@@ -142,7 +162,9 @@ function renderRunes(perks) {
         .map(sel => {
           const url = getRuneImageById(sel.perk);
           if (!url) return "";
-          return `<img class="runeIcon" src="${url}" alt="">`;
+          return `<img class="runeIcon" src="${url}" alt=""
+             onmouseover="afficherTooltip(${sel.perk}, event)"
+             onmouseout="cacherTooltip()">`;
         })
         .join("")
     )
@@ -155,10 +177,16 @@ function renderItems(p) {
   const itemsHTML = [];
   for (let i = 0; i <= 6; i++) {
     const id = p[`item${i}`];
-    if (id) itemsHTML.push(`<img class="itemIcon" src="${getItemImage(id)}" alt="">`);
-  }
+    if (id) {
+  itemsHTML.push(`
+    <img class="itemIcon" src="${getItemImage(id)}" alt=""
+         onmouseover="afficherTooltip(${id}, event)"
+         onmouseout="cacherTooltip()">
+  `);
+}
   return `<div class="itemsCell">${itemsHTML.join("")}</div>`;
 }
+  }
 
 
 // ====== FONCTION TIMELINE ======
@@ -257,7 +285,9 @@ function renderItemTimeline(achats) {
 
       html += `
         <div class="item-block">
-          <img src="${itemURL}" class="item-icon" alt="${itemName}" title="${itemName}">
+          <img src="${itemURL}" class="item-icon" alt="${itemName}" 
+           onmouseover="afficherTooltip(${id}, event)" 
+           onmouseout="cacherTooltip()">
           <span class="item-name">${itemName}</span>
         </div>
       `;
