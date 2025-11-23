@@ -9,6 +9,7 @@ async function chargerJSON(url) {
   return await res.json();
 }
 
+
 async function chargerItemData() {
   const patch = DDRAGON_PATCH || "15.22.1"; // adapte selon ton patch
   const url = `https://ddragon.leagueoflegends.com/cdn/${patch}/data/fr_FR/item.json`;
@@ -579,6 +580,17 @@ async function init() {
   } catch (e) {
     console.warn("Erreur lors du mapping des runes :", e);
   }
+
+  // ➕ AJOUTE ICI ton window.runeData
+  window.runeData = {};
+  runesData.forEach(style => {
+    window.runeData[style.id] = { name: style.name, shortDesc: style.shortDesc || "" };
+    style.slots?.forEach(slot => {
+      slot.runes?.forEach(rune => {
+        window.runeData[rune.id] = { name: rune.name, shortDesc: rune.shortDesc || "" };
+      });
+    });
+  });
 
   const matchContainer = document.getElementById("matchContainer");
   const importBtn = document.getElementById("importBtn");
