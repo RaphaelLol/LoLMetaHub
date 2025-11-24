@@ -32,13 +32,32 @@ function getApiKey() {
   return localStorage.getItem("riotApiKey") || "";
 }
 
-async function fetchTimeline(matchId) {
-  const REGION = "europe"; // adapte selon ton serveur (americas, asia, europe)
-  const API_KEY = getApiKey(); // 🔥 récupère la clé depuis localStorage
-
-  if (!API_KEY) {
-    throw new Error("⚠️ Clé Riot API manquante. Sauvegarde-la avant.");
+function sauverApiKey() {
+  const input = document.getElementById("apiKeyInput");
+  const key = input?.value?.trim();
+  if (!key) {
+    alert("⚠️ Entre une clé valide.");
+    return;
   }
+  localStorage.setItem("riotApiKey", key);
+  alert("✅ Clé API enregistrée localement !");
+}
+
+function getApiKey() {
+  return localStorage.getItem("riotApiKey") || "";
+}
+
+async function fetchTimeline(matchId) {
+  const REGION = "europe"; // adapte selon ton serveur
+  const API_KEY = getApiKey();
+  if (!API_KEY) throw new Error("⚠️ Clé Riot API manquante. Sauvegarde-la avant.");
+
+  const url = `https://${REGION}.api.riotgames.com/lol/match/v5/matches/${matchId}/timeline`;
+  const res = await fetch(url, { headers: { "X-Riot-Token": API_KEY } });
+  if (!res.ok) throw new Error("Erreur API Riot: " + res.status);
+  return await res.json();
+}
+
 
   const url = `https://${REGION}.api.riotgames.com/lol/match/v5/matches/${matchId}/timeline`;
   const res = await fetch(url, {
@@ -74,6 +93,12 @@ function cacherTooltip() {
   const tooltip = document.getElementById("itemTooltip");
   if (tooltip) tooltip.style.display = "none";
 }
+
+
+
+
+
+
 
 function getSummonerSpellImage(filename) {
   if (!filename) return "";
