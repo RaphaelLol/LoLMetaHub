@@ -43,9 +43,6 @@ function sauverApiKey() {
   alert("✅ Clé API enregistrée localement !");
 }
 
-function getApiKey() {
-  return localStorage.getItem("riotApiKey") || "";
-}
 
 async function fetchTimeline(matchId) {
   const REGION = "europe"; // adapte selon ton serveur
@@ -58,15 +55,6 @@ async function fetchTimeline(matchId) {
   return await res.json();
 }
 
-
-  const url = `https://${REGION}.api.riotgames.com/lol/match/v5/matches/${matchId}/timeline`;
-  const res = await fetch(url, {
-    headers: { "X-Riot-Token": API_KEY }
-  });
-
-  if (!res.ok) throw new Error("Erreur API Riot: " + res.status);
-  return await res.json();
-}
 
 function afficherTooltip(id, event) {
   const tooltip = document.getElementById("itemTooltip");
