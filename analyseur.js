@@ -28,14 +28,23 @@ async function init() {
 // Lancer init quand la page est prête
 document.addEventListener("DOMContentLoaded", init);
 
+function getApiKey() {
+  return localStorage.getItem("riotApiKey") || "";
+}
+
 async function fetchTimeline(matchId) {
   const REGION = "europe"; // adapte selon ton serveur (americas, asia, europe)
-  const API_KEY = "RGAPI-"; // ta clé API Riot
+  const API_KEY = getApiKey(); // 🔥 récupère la clé depuis localStorage
+
+  if (!API_KEY) {
+    throw new Error("⚠️ Clé Riot API manquante. Sauvegarde-la avant.");
+  }
 
   const url = `https://${REGION}.api.riotgames.com/lol/match/v5/matches/${matchId}/timeline`;
   const res = await fetch(url, {
     headers: { "X-Riot-Token": API_KEY }
   });
+
   if (!res.ok) throw new Error("Erreur API Riot: " + res.status);
   return await res.json();
 }
